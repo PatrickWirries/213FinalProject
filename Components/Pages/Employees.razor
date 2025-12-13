@@ -17,30 +17,34 @@ else
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
         @foreach (var emp in employees)
         {
+            var slug = SlugHelper.ToSlug(emp.FullName);
+            var href = $"/employees/{slug}?returnUrl=/employees";
             <div class="col">
-                <div class="card h-100">
-                    <div class="row g-0 align-items-center p-3">
-                        <div class="col-auto">
-                            <img src="https://via.placeholder.com/120" class="rounded" alt="@emp.FullName" style="width:120px;height:120px;object-fit:cover;" />
-                        </div>
-                        <div class="col">
-                            <div class="card-body p-0 ps-3">
-                                <h5 class="card-title mb-1">@emp.FullName</h5>
-                                <p class="mb-1 text-muted">@GetRole(emp)</p>
-                                <p class="mb-1"><a href="mailto:@emp.Email">@emp.Email</a></p>
-                                @if (!string.IsNullOrWhiteSpace(emp.PhoneNumber))
-                                {
-                                    <p class="mb-1"><a href="tel:@emp.PhoneNumber">@emp.PhoneNumber</a></p>
-                                }
-                                <p class="mb-1"><small class="text-muted">Hired: @emp.HireDate.ToString("d")</small></p>
-                                @if (!string.IsNullOrWhiteSpace(emp.Bio))
-                                {
-                                    <p class="mb-0">@emp.Bio</p>
-                                }
+                <a class="text-decoration-none text-body" href="@href">
+                    <div class="card h-100">
+                        <div class="row g-0 align-items-center p-3">
+                            <div class="col-auto">
+                                <img src="https://via.placeholder.com/120" class="rounded" alt="@emp.FullName" style="width:120px;height:120px;object-fit:cover;" />
+                            </div>
+                            <div class="col">
+                                <div class="card-body p-0 ps-3">
+                                    <h5 class="card-title mb-1">@emp.FullName</h5>
+                                    <p class="mb-1 text-muted">@GetRole(emp)</p>
+                                    <p class="mb-1"><a href="mailto:@emp.Email">@emp.Email</a></p>
+                                    @if (!string.IsNullOrWhiteSpace(emp.PhoneNumber))
+                                    {
+                                        <p class="mb-1"><a href="tel:@emp.PhoneNumber">@emp.PhoneNumber</a></p>
+                                    }
+                                    <p class="mb-1"><small class="text-muted">Hired: @emp.HireDate.ToString("d")</small></p>
+                                    @if (!string.IsNullOrWhiteSpace(emp.Bio))
+                                    {
+                                        <p class="mb-0">@emp.Bio</p>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         }
     </div>
