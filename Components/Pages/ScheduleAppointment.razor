@@ -1,0 +1,161 @@
+@page "/schedule-appointment"
+@rendermode InteractiveServer
+@using _213FinalProject.Models
+@inject NavigationManager Navigation
+
+<PageTitle>Schedule Appointment</PageTitle>
+
+<h1>Schedule Appointment</h1>
+
+<div class="mb-3">
+    <label class="form-label">Customer</label>
+    <InputSelect class="form-select" @bind-Value="model.CustomerID">
+        <option value="0">-- Select Customer --</option>
+        @foreach (var c in customers)
+        {
+            <option value="@c.CustomerID">@c.FullName (@c.Email)</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Service</label>
+    <div>
+        @foreach (var s in filteredServices)
+        {
+            bool disabled = selectedEmployeeId.HasValue && !employeeServiceMap[selectedEmployeeId.Value].Contains(s.ServiceID);
+            <button class="btn @(selectedServiceId == s.ServiceID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
+                    disabled="@disabled"
+                    @onclick="() => ToggleService(s.ServiceID)">
+                @s.Name (@s.DurationMinutes min) - @s.BasePrice.ToString("C")
+            </button>
+        }
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Employee</label>
+    <div>
+        @foreach (var e in filteredEmployees)
+        {
+            bool disabled = selectedServiceId.HasValue && !serviceEmployeeMap[selectedServiceId.Value].Contains(e.EmployeeID);
+            <button class="btn @(selectedEmployeeId == e.EmployeeID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
+                    disabled="@disabled"
+                    @onclick="() => ToggleEmployee(e.EmployeeID)">
+                @e.FullName
+            </button>
+        }
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Price</label>
+    <InputText class="form-control" @bind-Value="displayPrice" readonly />
+</div>
+
+<button class="btn btn-primary" @onclick="SubmitAppointment">Schedule</button>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success mt-3">@successMessage</div>
+}
+
+@code {
+    private Appointment model = new Appointment();
+    private string? successMessage;
+    private string displayPrice = "$0.00";
+
+    private List<Customer> customers = SeedData.Customers.ToList();
+    private List<Service> services = SeedData.Services.ToList();
+    private List<ServicePerforming> performingEmployees = SeedData.Employees.OfType<ServicePerforming>().ToList();
+
+    private List<Service> filteredServices => services;
+    private List<ServicePerforming> filteredEmployees => performingEmployees;
+
+    // selected ids
+    private int? selectedServiceId = null;
+    private int? selectedEmployeeId = null;
+
+    // mapping for filtering
+    private Dictionary<int, List<int>> serviceEmployeeMap;
+    private Dictionary<int, List<int>> employeeServiceMap;
+
+    protected override void OnInitialized()
+    {
+        // Build mappings
+        serviceEmployeeMap = new Dictionary<int, List<int>>();
+        employeeServiceMap = new Dictionary<int, List<int>>();
+
+        foreach (var sp in SeedData.ServicePerformingEmployeeServices)
+        {
+            if (!serviceEmployeeMap.ContainsKey(sp.ServiceID))
+                serviceEmployeeMap[sp.ServiceID] = new List<int>();
+            serviceEmployeeMap[sp.ServiceID].Add(sp.EmployeeID);
+
+            if (!employeeServiceMap.ContainsKey(sp.EmployeeID))
+                employeeServiceMap[sp.EmployeeID] = new List<int>();
+            employeeServiceMap[sp.EmployeeID].Add(sp.ServiceID);
+        }
+    }
+
+    private void ToggleService(int serviceId)
+    {
+        if (selectedServiceId == serviceId)
+        {
+            selectedServiceId = null;
+            model.ServiceID = 0;
+            model.Price = 0;
+            displayPrice = "$0.00";
+        }
+        else
+        {
+            selectedServiceId = serviceId;
+            model.ServiceID = serviceId;
+            var s = services.First(x => x.ServiceID == serviceId);
+            model.Price = s.BasePrice;
+            displayPrice = s.BasePrice.ToString("C");
+
+            // if currently selected employee cannot perform this service, unselect
+            if (selectedEmployeeId.HasValue && !serviceEmployeeMap[serviceId].Contains(selectedEmployeeId.Value))
+            {
+                selectedEmployeeId = null;
+                model.EmployeeID = 0;
+            }
+        }
+    }
+
+    private void ToggleEmployee(int employeeId)
+    {
+        if (selectedEmployeeId == employeeId)
+        {
+            selectedEmployeeId = null;
+            model.EmployeeID = 0;
+        }
+        else
+        {
+            selectedEmployeeId = employeeId;
+            model.EmployeeID = employeeId;
+
+            // if currently selected service is not supported by this employee, unselect
+            if (selectedServiceId.HasValue && !employeeServiceMap[employeeId].Contains(selectedServiceId.Value))
+            {
+                selectedServiceId = null;
+                model.ServiceID = 0;
+                model.Price = 0;
+                displayPrice = "$0.00";
+            }
+        }
+    }
+
+    private void SubmitAppointment()
+    {
+        if (model.CustomerID == 0 || model.ServiceID == 0 || model.EmployeeID == 0)
+        {
+            successMessage = "Please select Customer, Service, and Employee.";
+            return;
+        }
+
+        // Save appointment (simulate)
+        successMessage = $"Appointment scheduled: Customer {model.CustomerID}, Service {model.ServiceID}, Employee {model.EmployeeID}, Price {model.Price:C}";
+    }
+}
