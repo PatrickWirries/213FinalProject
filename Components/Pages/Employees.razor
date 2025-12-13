@@ -1,0 +1,69 @@
+﻿@page "/employees"
+@attribute [StreamRendering]
+@using _213FinalProject.Models
+
+<PageTitle>Employees</PageTitle>
+
+<h1>Employees</h1>
+
+<p>List of employees with photo placeholder and contact / role information.</p>
+
+@if (employees == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        @foreach (var emp in employees)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="row g-0 align-items-center p-3">
+                        <div class="col-auto">
+                            <img src="https://via.placeholder.com/120" class="rounded" alt="@emp.FullName" style="width:120px;height:120px;object-fit:cover;" />
+                        </div>
+                        <div class="col">
+                            <div class="card-body p-0 ps-3">
+                                <h5 class="card-title mb-1">@emp.FullName</h5>
+                                <p class="mb-1 text-muted">@GetRole(emp)</p>
+                                <p class="mb-1"><a href="mailto:@emp.Email">@emp.Email</a></p>
+                                @if (!string.IsNullOrWhiteSpace(emp.PhoneNumber))
+                                {
+                                    <p class="mb-1"><a href="tel:@emp.PhoneNumber">@emp.PhoneNumber</a></p>
+                                }
+                                <p class="mb-1"><small class="text-muted">Hired: @emp.HireDate.ToString("d")</small></p>
+                                @if (!string.IsNullOrWhiteSpace(emp.Bio))
+                                {
+                                    <p class="mb-0">@emp.Bio</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IReadOnlyList<Employee>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // small delay to demonstrate loading state when StreamRendering is enabled
+        await Task.Delay(200);
+        employees = SeedData.Employees;
+    }
+
+    private static string GetRole(Employee e)
+    {
+        return e switch
+        {
+            Manager => "Manager",
+            Receptionist => "Receptionist",
+            ServicePerforming => "Service Performer",
+            _ => "Employee"
+        };
+    }
+}
