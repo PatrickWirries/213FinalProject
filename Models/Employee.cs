@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace _213FinalProject.Models
 {
@@ -14,5 +15,10 @@ namespace _213FinalProject.Models
         public DateOnly HireDate { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        [Required]
+        //The below regular expression validates that the URL is in a proper format.
+        [RegularExpression("^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$")]
+        public required String PhotoURL { get; set; }
     }
 }

@@ -17,7 +17,8 @@ namespace Data
                 PhoneNumber = "555-0101",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)),
                 Bio = "Oversees operations and staff.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/happy-joyful-female-woman-with-tablet-posing-indoors_74855-2896.jpg"""
             },
             new ServicePerforming
             {
@@ -28,7 +29,8 @@ namespace Data
                 PhoneNumber = "555-0102",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3)),
                 Bio = "Senior stylist with 10 years experience.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/portrait-smiling-young-man-wearing-headphones_1262-5371.jpg"""
             },
             new Receptionist
             {
@@ -39,7 +41,8 @@ namespace Data
                 PhoneNumber = "555-0103",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 Bio = "Front desk and scheduling.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/young-adult-casual-wear-standing-with-his-arms-crossed-camera_482257-123008.jpg"""
             },
             new ServicePerforming
             {
@@ -50,7 +53,8 @@ namespace Data
                 PhoneNumber = "555-0104",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-4)),
                 Bio = "Massage therapist specializing in therapeutic techniques.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/designer-working-3d-model_23-2149371896.jpg"""
             },
             new ServicePerforming
             {
@@ -61,7 +65,8 @@ namespace Data
                 PhoneNumber = "555-0105",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
                 Bio = "Esthetician focused on facials and skin treatments.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/close-up-excited-person-portrait_23-2151186640.jpg"""
             },
             new ServicePerforming
             {
@@ -72,7 +77,8 @@ namespace Data
                 PhoneNumber = "555-0106",
                 HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 Bio = "Nail technician and waxing specialist.",
-                IsActive = true
+                IsActive = true,
+                PhotoURL = """https://img.freepik.com/free-photo/african-girl-blue-shirt-smiling-posing-with-crossed-arms_176420-11226.jpg"""
             }
         };
 

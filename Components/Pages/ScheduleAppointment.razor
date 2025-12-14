@@ -19,6 +19,7 @@
     </InputSelect>
 </div>
 
+@* --=-- Service Selection --=-- *@
 <div class="mb-3">
     <label class="form-label">Service</label>
     <div>
@@ -33,7 +34,11 @@
         }
     </div>
 </div>
+@* --=-- Service Selection --=-- *@
 
+
+
+@* --=-- Employee Selection --=-- *@
 <div class="mb-3">
     <label class="form-label">Employee</label>
     <div>
@@ -48,13 +53,21 @@
         }
     </div>
 </div>
+@* --=-- Employee Selection --=-- *@
 
+
+
+@* --=-- Price Display --=-- *@
 <div class="mb-3">
     <label class="form-label">Price</label>
     <InputText class="form-control" @bind-Value="displayPrice" readonly />
 </div>
+@* --=-- Price Display --=-- *@
+
 
 <button class="btn btn-primary btn-submit" @onclick="SubmitAppointment">Schedule</button>
+
+
 
 @if (!string.IsNullOrEmpty(successMessage))
 {
