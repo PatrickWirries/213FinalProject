@@ -63,7 +63,7 @@ namespace Data
                 LastName = "Wilson",
                 Email = "emma.wilson@example.com",
                 PhoneNumber = "555-0105",
-                HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
+                HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
                 Bio = "Esthetician focused on facials and skin treatments.",
                 IsActive = true,
                 PhotoURL = """https://img.freepik.com/free-photo/close-up-excited-person-portrait_23-2151186640.jpg"""
