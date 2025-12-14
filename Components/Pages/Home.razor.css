@@ -1,0 +1,146 @@
+﻿body{
+   background-color:transparent;
+}
+
+/* Page header */
+.page-header {
+    text-align: center;
+    padding: 1.25rem 1rem 0.5rem;
+}
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 2.25rem;
+        letter-spacing: 0.4px;
+        color: #2b2b2b;
+        font-weight: 700;
+    }
+
+.CompanyNameTitle{
+    text-align:center;
+}
+
+/* small visual break under title */
+.page-break {
+    height: 0.6rem;
+}
+
+/* Hero layout */
+.hero {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.hero-inner {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Salon image */
+.hero-left {
+    flex: 1 1 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:transparent
+}
+
+.salon-image {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Right hero content, "Reliable and Friendly Service you can Trust" description */
+.hero-right {
+    flex: 1 1 320px;
+    padding: 0.25rem 0.5rem;
+}
+
+    .hero-right h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        color: #222;
+    }
+
+.lead {
+    margin: 0 0 1rem 0;
+    color: #555;
+    line-height: 1.45;
+}
+
+.meta {
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+
+/* CTA */
+.cta {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: #c66b91;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+    .cta:hover {
+        filter: brightness(0.95);
+    }
+
+/* Bio / highlights */
+.bio {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.bio-inner {
+    width: 100%;
+    max-width: 1100px;
+    background: #fbfbfb;
+    border-radius: 10px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+    .bio-inner h2 {
+        margin-top: 0;
+    }
+
+    .bio-inner p {
+        color: #555;
+        line-height: 1.6;
+    }
+
+/* Responsive tweaks */
+@media (min-width: 900px) {
+    .hero-inner {
+        flex-wrap: nowrap;
+    }
+}
+
+@media (max-width: 520px) {
+    .page-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero-right h2 {
+        font-size: 1rem;
+    }
+
+    .salon-image {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+}
