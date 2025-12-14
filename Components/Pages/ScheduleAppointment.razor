@@ -57,6 +57,46 @@
 
 
 
+@* --=-- Date Selection --=--*@
+<div class="mb-3">
+    <label class="form-label">Date</label>
+    <InputDate @bind-Value="selectedDate"
+               class="form-control"
+               Min="@DateTime.Today" />
+</div>
+
+@* --=-- Date Selection --=--*@
+
+
+
+@* --=-- Time Selection --=-- *@
+<div class="mb-3">
+    <label class="form-label">Timeslots</label>
+
+    @if (selectedDate == null || selectedServiceId == null || selectedEmployeeId == null)
+    {
+        <div class="text-muted">
+            Select date, service, and employee to view availability.
+        </div>
+    }
+    else
+    {
+        <div>
+            @foreach (var time in GetAvailableTimeSlots())
+            {
+                <button class="btn @(model.ScheduledTime == time ? "btn-success" : "btn-outline-primary") me-2 mb-2"
+                        @onclick="() => SelectTime(time)">
+                    @time.ToString("hh:mm tt")
+                </button>
+            }
+        </div>
+    }
+</div>
+@* --=-- Time Selection --=-- *@
+
+
+
+
 @* --=-- Price Display --=-- *@
 <div class="mb-3">
     <label class="form-label">Price</label>
@@ -75,6 +115,11 @@
 }
 
 @code {
+    private static readonly TimeOnly BusinessOpen = new TimeOnly(9, 0);
+    private static readonly TimeOnly BusinessClose = new TimeOnly(17, 0);
+    private const int SlotMinutes = 30;
+
+
     private Appointment model = new Appointment();
     private string? successMessage;
     private string displayPrice = "$0.00";
@@ -89,6 +134,8 @@
     // selected ids
     private int? selectedServiceId = null;
     private int? selectedEmployeeId = null;
+    private DateOnly? selectedDate;
+
 
     // mapping for filtering
     private Dictionary<int, List<int>> serviceEmployeeMap;
@@ -161,13 +208,63 @@
         }
     }
 
+    private List<TimeOnly> GetAvailableTimeSlots()
+    {
+        if (!selectedDate.HasValue || !selectedEmployeeId.HasValue || !selectedServiceId.HasValue)
+            return new();
+
+        var service = services.First(s => s.ServiceID == selectedServiceId.Value);
+        int duration = service.DurationMinutes;
+
+        var reserved = AppointmentStore.Appointments
+            .Where(a =>
+                a.EmployeeID == selectedEmployeeId &&
+                a.ScheduledDate == selectedDate)
+            .ToList();
+
+        var slots = new List<TimeOnly>();
+        var current = BusinessOpen;
+
+        while (current.AddMinutes(duration) <= BusinessClose)
+        {
+            bool overlaps = reserved.Any(a =>
+            {
+                var reservedStart = a.ScheduledTime;
+                var reservedEnd = a.ScheduledTime.AddMinutes(a.Duration);
+
+                var slotEnd = current.AddMinutes(duration);
+
+                return current < reservedEnd && slotEnd > reservedStart;
+            });
+
+            if (!overlaps)
+                slots.Add(current);
+
+            current = current.AddMinutes(SlotMinutes);
+        }
+
+        return slots;
+    }
+
+    private void SelectTime(TimeOnly time)
+    {
+        model.ScheduledTime = time;
+        model.ScheduledDate = selectedDate!.Value;
+    }
+
+
     private void SubmitAppointment()
     {
-        if (model.CustomerID == 0 || model.ServiceID == 0 || model.EmployeeID == 0)
+        if (model.CustomerID == 0 ||
+        model.ServiceID == 0 ||
+        model.EmployeeID == 0 ||
+        selectedDate == null ||
+        model.ScheduledTime == default)
         {
-            successMessage = "Please select Customer, Service, and Employee.";
+            successMessage = "Please complete all selections.";
             return;
         }
+
 
         // Save appointment (simulate)
         successMessage = $"Appointment scheduled: Customer {model.CustomerID}, Service {model.ServiceID}, Employee {model.EmployeeID}, Price {model.Price:C}";
