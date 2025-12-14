@@ -1,0 +1,93 @@
+﻿@page "/services/{slug}"
+@using Data
+@using _213FinalProject.Models
+
+<PageTitle>Service Details</PageTitle>
+
+@if (service == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body d-flex gap-4">
+
+            <div style="min-width:300px">
+                <h2>@service.Name</h2>
+                <p class="text-muted">@service.Category</p>
+
+                <p>
+                    <strong>Duration:</strong> @service.DurationMinutes min<br />
+                    <strong>Price:</strong> @service.BasePrice.ToString("C")
+                </p>
+
+                @if (!string.IsNullOrWhiteSpace(service.Description))
+                {
+                    <p>@service.Description</p>
+                }
+
+                <a class="btn btn-outline-primary mt-3"
+                   href="/schedule-appointment?serviceId=@service.ServiceID">
+                    Book This Service
+                </a>
+            </div>
+
+            <div>
+                <h4>Performed By</h4>
+
+                @if (serviceEmployees == null)
+                    { <p><em>Loading employees...</em></p> }
+                else if (!serviceEmployees.Any())
+                    { <p><em>No employees assigned.</em></p> }
+                else
+                {
+                    <ul>
+                        @foreach (var e in serviceEmployees)
+                        {
+                            var empSlug = SlugHelper.ToSlug(e.FullName);
+                            <li>
+                                <a href="/employees/@empSlug?returnUrl=/services/@slug">
+                                    @e.FullName
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? slug { get; set; }
+
+    private Service? service;
+    private List<ServicePerforming>? serviceEmployees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(100);
+
+        if (!string.IsNullOrWhiteSpace(slug))
+        {
+            service = SeedData.Services
+                .FirstOrDefault(s => SlugHelper.ToSlug(s.Name) == slug);
+
+            if (service != null)
+            {
+                var employeeIds = SeedData.ServicePerformingEmployeeServices
+                    .Where(x => x.ServiceID == service.ServiceID)
+                    .Select(x => x.EmployeeID)
+                    .ToHashSet();
+
+                serviceEmployees = SeedData.Employees
+                    .OfType<ServicePerforming>()
+                    .Where(e => employeeIds.Contains(e.EmployeeID))
+                    .ToList();
+            }
+        }
+    }
+}

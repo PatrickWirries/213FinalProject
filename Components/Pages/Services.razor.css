@@ -1,0 +1,10 @@
+﻿.card {
+    border-color: purple;
+    border-width: thick;
+    margin-top: 2px;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: translateY(-6px);
+    }

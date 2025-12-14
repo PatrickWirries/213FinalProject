@@ -1,0 +1,15 @@
+﻿.card {
+    border-color: purple;
+    border-width: thick;
+}
+
+
+.btn-outline-primary {
+    color: purple;
+    border-color: purple;
+}
+
+    .btn-outline-primary:hover {
+        background-color: purple;
+        color: white;
+    }

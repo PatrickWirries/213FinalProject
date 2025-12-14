@@ -1,0 +1,61 @@
+﻿@page "/services"
+@attribute [StreamRendering]
+@using Data
+@using _213FinalProject.Models
+
+<PageTitle>Services</PageTitle>
+
+<h1>Services</h1>
+
+<p>Browse all services currently offered.</p>
+
+@if (services == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        @foreach (var service in services)
+        {
+            var slug = SlugHelper.ToSlug(service.Name);
+            var href = $"/services/{slug}?returnUrl=/services";
+
+            <div class="col">
+                <a class="text-decoration-none text-body" href="@href">
+                    <div class="card h-100">
+
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">@service.Name</h5>
+
+                            <p class="mb-1 text-muted">
+                                Duration: @service.DurationMinutes min
+                            </p>
+
+                            <p class="mb-2 fw-semibold">
+                                Price: @service.BasePrice.ToString("C")
+                            </p>
+
+                            @if (!string.IsNullOrWhiteSpace(service.Description))
+                            {
+                                <p class="mb-0">@service.Description</p>
+                            }
+                        </div>
+
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IReadOnlyList<Service>? services;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // small delay to demonstrate loading state when StreamRendering is enabled
+        await Task.Delay(200);
+        services = SeedData.Services;
+    }
+}
