@@ -1,7 +1,8 @@
+using _213FinalProject.Models;
 using System;
 using System.Collections.Generic;
 
-namespace _213FinalProject.Models
+namespace Data
 {
     public static class SeedData
     {
