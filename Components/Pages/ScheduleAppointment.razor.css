@@ -34,6 +34,12 @@
     border-color: purple;
 }
 
+.date-selector, .price-display {
+    max-width: 25%;
+    width: 25%;
+}
+
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem purple;
 }

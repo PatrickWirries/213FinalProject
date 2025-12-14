@@ -58,7 +58,7 @@
 
 
 @* --=-- Date Selection --=--*@
-<div class="mb-3">
+<div class="mb-3 date-selector">
     <label class="form-label">Date</label>
     <InputDate @bind-Value="selectedDate"
                class="form-control"
@@ -98,7 +98,7 @@
 
 
 @* --=-- Price Display --=-- *@
-<div class="mb-3">
+<div class="mb-3 price-display">
     <label class="form-label">Price</label>
     <InputText class="form-control" @bind-Value="displayPrice" readonly />
 </div>
@@ -122,7 +122,7 @@
 
     private Appointment model = new Appointment();
     private string? successMessage;
-    private string displayPrice = "$0.00";
+    private string displayPrice = "N/A";
 
     private List<Customer> customers = SeedData.Customers.ToList();
     private List<Service> services = SeedData.Services.ToList();
@@ -134,7 +134,7 @@
     // selected ids
     private int? selectedServiceId = null;
     private int? selectedEmployeeId = null;
-    private DateOnly? selectedDate;
+    private DateOnly? selectedDate = DateOnly.FromDateTime(DateTime.Now);
 
 
     // mapping for filtering
@@ -166,7 +166,7 @@
             selectedServiceId = null;
             model.ServiceID = 0;
             model.Price = 0;
-            displayPrice = "$0.00";
+            displayPrice = "N/A";
         }
         else
         {
