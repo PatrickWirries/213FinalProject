@@ -8,12 +8,12 @@
     padding: 1.25rem 1rem 0.5rem;
 }
 
-    .page-header h1 {
-        margin: 0;
-        font-size: 2.25rem;
-        letter-spacing: 0.4px;
-        color: #2b2b2b;
-        font-weight: 700;
+.page-header h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    letter-spacing: 0.4px;
+    color: #2b2b2b;
+    font-weight: 700;
     }
 
 .CompanyNameTitle{
@@ -87,7 +87,7 @@
     display: inline-block;
     margin-top: 0.5rem;
     padding: 0.6rem 1rem;
-    background: #c66b91;
+    background: purple;
     color: white;
     text-decoration: none;
     border-radius: 8px;

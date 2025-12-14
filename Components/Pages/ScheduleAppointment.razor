@@ -54,7 +54,7 @@
     <InputText class="form-control" @bind-Value="displayPrice" readonly />
 </div>
 
-<button class="btn btn-primary" @onclick="SubmitAppointment">Schedule</button>
+<button class="btn btn-primary btn-submit" @onclick="SubmitAppointment">Schedule</button>
 
 @if (!string.IsNullOrEmpty(successMessage))
 {
