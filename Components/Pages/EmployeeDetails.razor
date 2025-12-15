@@ -62,6 +62,7 @@ else
                 .OfType<Employee>()
                 .AsEnumerable()
                 .FirstOrDefault(e =>
+                //below line is nessessary and doesn't seem to work with EF core directly if we use the computed $FullName property
                 SlugHelper.ToSlug($"{e.FirstName} {e.LastName}") == slug);
 
             if (employee != null)
