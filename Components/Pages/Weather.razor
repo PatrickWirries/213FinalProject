@@ -1,5 +1,8 @@
 ﻿@page "/weather"
-@attribute [StreamRendering]
+@* @attribute [StreamRendering] *@
+@rendermode InteractiveServer
+@inject AuthService AuthService
+@inject NavigationManager Nav
 
 <PageTitle>Weather</PageTitle>
 
@@ -39,8 +42,35 @@ else
 @code {
     private WeatherForecast[]? forecasts;
 
-    protected override async Task OnInitializedAsync()
+
+
+    
+    /////////////////////////////////////////////////////
+   
+
+
+    private bool _checkedAuth;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender || _checkedAuth)
+            return;
+
+        _checkedAuth = true;
+
+        if (!await AuthService.IsLoggedInAsync())
+        {
+            Nav.NavigateTo("/LoginUser", forceLoad: true);
+        }
+
+        StateHasChanged();
+    
+        /////////////////////////////////////////////////////
+
+
+
+
+
         // Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
 

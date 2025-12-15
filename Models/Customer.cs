@@ -12,8 +12,6 @@ namespace _213FinalProject.Models
         [StringLength(2000)]
         public string? Notes { get; set; }
 
-        [Required]
-        [MinLength(64), MaxLength(128)]
-        public string PasswordHash { get; set; } = string.Empty;
+        
     }
 }

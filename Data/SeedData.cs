@@ -9,13 +9,12 @@ namespace _213FinalProject.Data
     {
         public static void Initialize(_213FinalProjectContext context)
         {
-            // Ensure database is created
-            context.Database.EnsureCreated();
+         
 
             // Seed Employees / Derived types
-            if (!context.Employee.Any())
+            if (!context.User.Any(u => u is Employee))
             {
-                context.Employee.AddRange(
+                context.User.AddRange(
                     new Manager
                     {
                         //UserID = 1,
@@ -23,6 +22,7 @@ namespace _213FinalProject.Data
                         LastName = "Johnson",
                         Email = "alice.johnson@example.com",
                         PhoneNumber = "555-0101",
+                        PasswordHash = "ManagerAlice",
                         HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)),
                         Bio = "Oversees operations and staff.",
                         IsActive = true,
@@ -35,6 +35,7 @@ namespace _213FinalProject.Data
                         LastName = "Lopez",
                         Email = "cara.lopez@example.com",
                         PhoneNumber = "555-0103",
+                        PasswordHash = "ReceptionistCara",
                         HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                         Bio = "Front desk and scheduling.",
                         IsActive = true,
@@ -47,6 +48,7 @@ namespace _213FinalProject.Data
                         LastName = "Smith",
                         Email = "bob.smith@example.com",
                         PhoneNumber = "555-0102",
+                        PasswordHash = "ServiceBob",
                         HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3)),
                         Bio = "Senior stylist with 10 years experience.",
                         IsActive = true,
@@ -60,6 +62,7 @@ namespace _213FinalProject.Data
                         LastName = "Miller",
                         Email = "dave.miller@example.com",
                         PhoneNumber = "555-0104",
+                        PasswordHash = "ServiceDave",
                         HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-4)),
                         Bio = "Massage therapist specializing in therapeutic techniques.",
                         IsActive = true,
@@ -72,6 +75,7 @@ namespace _213FinalProject.Data
                     LastName = "Wilson",
                     Email = "emma.wilson@example.com",
                     PhoneNumber = "555-0105",
+                    PasswordHash = "ServiceEmma",
                     HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
                     Bio = "Esthetician focused on facials and skin treatments.",
                     IsActive = true,
@@ -84,6 +88,7 @@ namespace _213FinalProject.Data
                     LastName = "Garcia",
                     Email = "fiona.garcia@example.com",
                     PhoneNumber = "555-0106",
+                    PasswordHash = "ServiceFiona",
                     HireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                     Bio = "Nail technician and waxing specialist.",
                     IsActive = true,
@@ -94,9 +99,9 @@ namespace _213FinalProject.Data
                 }
 
                 // Seed Customers
-                if (!context.Customer.Any())
-                {
-                    context.Customer.AddRange(
+                if (!context.User.Any(u => u is Customer))
+            {
+                    context.User.AddRange(
                         new Customer
                         {
                             //UserID = 7,

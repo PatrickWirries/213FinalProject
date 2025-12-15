@@ -14,9 +14,12 @@ namespace _213FinalProject.Data
         {
         }
 
-        public DbSet<_213FinalProject.Models.Appointment> Appointment { get; set; } = default!;
-        public DbSet<_213FinalProject.Models.User> User { get; set; } = default!;
-        public DbSet<_213FinalProject.Models.Service> Service { get; set; } = default!;
+
+       public DbSet<_213FinalProject.Models.User> User { get; set; } = default!; 
+       public DbSet<_213FinalProject.Models.Service> Service { get; set; } = default!;
+       public DbSet<_213FinalProject.Models.Appointment> Appointment { get; set; } = default!;
+ 
+       
         public DbSet<_213FinalProject.Models.Customer> Customer { get; set; } = default!;
         public DbSet<_213FinalProject.Models.Employee> Employee { get; set; } = default!;
         public DbSet<_213FinalProject.Models.Receptionist> Receptionist { get; set; } = default!;
