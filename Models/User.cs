@@ -23,7 +23,11 @@ namespace _213FinalProject.Models
         [Phone]
         [StringLength(20)]
         public string? PhoneNumber { get; set; }
+        [Required]
+        [MinLength(5), MaxLength(128)]
+        public string PasswordHash { get; set; } = string.Empty;
 
         public string FullName => $"{FirstName} {LastName}";
+
     }
 }

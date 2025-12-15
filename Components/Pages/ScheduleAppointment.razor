@@ -4,6 +4,7 @@
 @using _213FinalProject.Models
 @inject NavigationManager Navigation
 @inject _213FinalProjectContext context
+@inject AuthService AuthService
 
 <PageTitle>Schedule Appointment</PageTitle>
 
@@ -143,8 +144,14 @@
     private Dictionary<int, List<int>> serviceEmployeeMap;
     private Dictionary<int, List<int>> employeeServiceMap;
 
+
+
+
+
     protected override void OnInitialized()
+
     {
+
         // Build mappings
         serviceEmployeeMap = new Dictionary<int, List<int>>();
         employeeServiceMap = new Dictionary<int, List<int>>();
@@ -276,5 +283,19 @@
 
         // Save appointment (simulate)
         successMessage = $"Appointment scheduled: Customer {model.CustomerID}, Service {model.ServiceID}, Employee {model.EmployeeID}, Price {model.Price:C}";
+    }
+    private bool _checkedAuth;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checkedAuth)
+            return;
+
+        _checkedAuth = true;
+
+        if (!await AuthService.IsLoggedInAsync())
+        {
+            Navigation.NavigateTo("/LoginUser", forceLoad: true);
+        }
+        StateHasChanged();
     }
 }
