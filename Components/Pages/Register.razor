@@ -1,46 +1,48 @@
 ﻿@page "/RegisterUser"
-@using _213FinalProject.Models
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 @inject AuthService AuthService
 
+<link rel="stylesheet" href="css/register.css">
+
 <PageTitle>Register</PageTitle>
 
-<h3>Register</h3>
+<div class="register-wrapper">
+    <div class="register-card">
+        <h3 class="register-title">Create an account</h3>
 
-<form>
-    <div class="mb-3">
-        <label>Email (Less than 254 characters)</label>
-        <InputText type="email" class="form-control" @bind-Value="email" required/>
+        <form class="register-form">
+            <div class="mb-3">
+                <label class="form-label">Email (Less than 254 characters)</label>
+                <InputText type="email" class="form-control" @bind-Value="email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password: (5-128 characters)</label>
+                <InputText type="password" class="form-control" @bind-Value="password" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">First Name (Less than 50 characters)</label>
+                <InputText type="text" class="form-control" @bind-Value="firstName" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Last Name (Less than 50 characters)</label>
+                <InputText type="text" class="form-control" @bind-Value="lastName" required />
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary primary-action" type="button" @onclick="RegisterAccount">Register</button>
+            </div>
+        </form>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger mt-2 register-error">@ErrorMessage</div>
+        }
     </div>
-
-    <div class="mb-3">
-        <label>Password: (5-128 characters)</label>
-        <InputText type="password" class="form-control" @bind-Value="password" required/>
-    </div>
-
-    <div class="mb-3">
-        <label>First Name (Less than 50 characters)</label>
-        <InputText type="text" class="form-control" @bind-Value="firstName" required/>
-    </div>
-
-    <div class="mb-3">
-        <label>Last Name (Less than 50 characters)</label>
-        <InputText type="text" class="form-control" @bind-Value="lastName" required/>
-    </div>
-
-  
-
-    <!-- Use a non-submit button and Blazor @onclick to invoke the handler -->
-    <button class="btn btn-primary" type="button" @onclick="RegisterAccount">Register</button>
-</form>
-
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="alert alert-danger mt-2">@ErrorMessage</div>
-}
-
-
+</div>
 
 @code {
     private string email = "";

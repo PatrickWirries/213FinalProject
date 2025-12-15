@@ -79,6 +79,9 @@ public class AuthService
         return await _context.User.FindAsync(result.Value);
     }
 
+    /// <summary>
+    /// Validate user registration details and create a new user if valid.
+    /// </summary>
     public async Task<bool> IsUser(string email, string password, string firstName, string lastName)
     {
         var result = await _context.User.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
@@ -107,5 +110,22 @@ public class AuthService
         _context.User.Add(newUser);
         _context.SaveChanges();
         return true;
+    }
+
+    ///<summary>
+    /// Validate if email is in use and password is valid, set new password
+    /// </summary>
+    public async Task<bool> IsUser(string email, string password)
+    {
+            var result = await _context.User.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            if (result != null)
+            {
+                result.PasswordHash = password;
+                _context.User.Update(result);
+                _context.SaveChanges();
+            return true;
+            }
+        
+        return false;
     }
 }
