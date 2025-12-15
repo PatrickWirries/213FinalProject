@@ -2,6 +2,7 @@
 @attribute [StreamRendering]
 @using Data
 @using _213FinalProject.Models
+@inject _213FinalProjectContext context
 
 <PageTitle>Services</PageTitle>
 
@@ -56,6 +57,6 @@ else
     {
         // small delay to demonstrate loading state when StreamRendering is enabled
         await Task.Delay(200);
-        services = SeedData.Services;
+        services = context.Service.ToList();
     }
 }

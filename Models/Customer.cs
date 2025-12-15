@@ -4,8 +4,7 @@ namespace _213FinalProject.Models
 {
     public class Customer : User
     {
-        [Key]
-        public int CustomerID { get; set; }
+
 
         [Required]
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;

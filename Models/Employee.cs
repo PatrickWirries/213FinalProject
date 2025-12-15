@@ -5,8 +5,7 @@ namespace _213FinalProject.Models
 {
     public class Employee : User
     {
-        [Key]
-        public int EmployeeID { get; set; }
+
 
         [StringLength(1000)]
         public string? Bio { get; set; }

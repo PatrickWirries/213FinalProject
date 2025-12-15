@@ -4,6 +4,9 @@ namespace _213FinalProject.Models
 {
     public abstract class User
     {
+        [Key]
+        public int UserID { get; set; }
+
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; } = string.Empty;

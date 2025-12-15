@@ -9,6 +9,7 @@ namespace _213FinalProject.Models
 
         [Required]
         public int EmployeeID { get; set; }
+        //Foreign key ^^?
 
         [Required]
         public int ServiceID { get; set; }

@@ -1,7 +1,8 @@
 ﻿@page "/employees"
 @attribute [StreamRendering]
-@using Data
+@using _213FinalProject.Data
 @using _213FinalProject.Models
+@inject _213FinalProjectContext context
 
 <PageTitle>Employees</PageTitle>
 
@@ -64,7 +65,8 @@ else
     {
         // small delay to demonstrate loading state when StreamRendering is enabled
         await Task.Delay(200);
-        employees = SeedData.Employees;
+        employees = context.Employee.ToList();
+      
     }
 
     private static string GetRole(Employee e)

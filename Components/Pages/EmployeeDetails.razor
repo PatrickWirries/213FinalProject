@@ -1,6 +1,7 @@
 @page "/employees/{slug}"
-@using Data
+@using _213FinalProject.Data
 @using _213FinalProject.Models
+@inject _213FinalProjectContext context
 
 <PageTitle>Employee Details</PageTitle>
 
@@ -56,15 +57,15 @@ else
 
         if (!string.IsNullOrWhiteSpace(slug))
         {
-            employee = SeedData.Employees.FirstOrDefault(e => SlugHelper.ToSlug(e.FullName) == slug);
+            employee = context.Employee.FirstOrDefault(e => SlugHelper.ToSlug(e.FullName) == slug);
             if (employee != null)
             {
-                var serviceIds = SeedData.ServicePerformingEmployeeServices
-                    .Where(x => x.EmployeeID == employee.EmployeeID)
+                var serviceIds = context.ServicePerformingEmployeeService
+                    .Where(x => x.EmployeeID == employee.UserID)
                     .Select(x => x.ServiceID)
                     .ToHashSet();
 
-                employeeServices = SeedData.Services
+                employeeServices = context.Service
                     .Where(s => serviceIds.Contains(s.ServiceID))
                     .ToList();
             }

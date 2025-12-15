@@ -3,6 +3,7 @@
 @using Data
 @using _213FinalProject.Models
 @inject NavigationManager Navigation
+@inject _213FinalProjectContext context
 
 <PageTitle>Schedule Appointment</PageTitle>
 
@@ -17,7 +18,7 @@
         <option value="0">-- Select Customer --</option>
         @foreach (var c in customers)
         {
-            <option value="@c.CustomerID">@c.FullName (@c.Email)</option>
+            <option value="@c.UserID">@c.FullName (@c.Email)</option>
         }
     </InputSelect>
 </div>
@@ -49,10 +50,10 @@
     <div>
         @foreach (var e in filteredEmployees)
         {
-            bool disabled = selectedServiceId.HasValue && !serviceEmployeeMap[selectedServiceId.Value].Contains(e.EmployeeID);
-            <button class="btn @(selectedEmployeeId == e.EmployeeID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
+            bool disabled = selectedServiceId.HasValue && !serviceEmployeeMap[selectedServiceId.Value].Contains(e.UserID);
+            <button class="btn @(selectedEmployeeId == e.UserID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
                     disabled="@disabled"
-                    @onclick="() => ToggleEmployee(e.EmployeeID)">
+                    @onclick="() => ToggleEmployee(e.UserID)">
                 @e.FullName
             </button>
         }
@@ -121,10 +122,13 @@
     private Appointment model = new Appointment();
     private string? successMessage;
     private string displayPrice = "N/A";
+    private List<Customer> customers = new List<Customer>();
+    private List<Service> services = new List<Service>();
+    private List<ServicePerforming> performingEmployees = new List<ServicePerforming>();
 
-    private List<Customer> customers = SeedData.Customers.ToList();
-    private List<Service> services = SeedData.Services.ToList();
-    private List<ServicePerforming> performingEmployees = SeedData.Employees.OfType<ServicePerforming>().ToList();
+  
+
+    
 
     private List<Service> filteredServices => services;
     private List<ServicePerforming> filteredEmployees => performingEmployees;
@@ -145,7 +149,11 @@
         serviceEmployeeMap = new Dictionary<int, List<int>>();
         employeeServiceMap = new Dictionary<int, List<int>>();
 
-        foreach (var sp in SeedData.ServicePerformingEmployeeServices)
+        customers = context.Customer.ToList();
+        services = context.Service.ToList();
+        performingEmployees = context.Employee.OfType<ServicePerforming>().ToList();
+
+        foreach (var sp in context.ServicePerformingEmployeeService)
         {
             if (!serviceEmployeeMap.ContainsKey(sp.ServiceID))
             { serviceEmployeeMap[sp.ServiceID] = new List<int>(); }
@@ -216,7 +224,7 @@
         var service = services.First(s => s.ServiceID == selectedServiceId.Value);
         int duration = service.DurationMinutes;
 
-        var reserved = AppointmentStore.Appointments
+        var reserved = context.Appointment
             .Where(a =>
                 a.EmployeeID == selectedEmployeeId &&
                 a.ScheduledDate == selectedDate)
