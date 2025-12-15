@@ -1,0 +1,163 @@
+﻿@page "/manager-panel"
+@using _213FinalProject.Data
+@using _213FinalProject.Models
+@using Microsoft.EntityFrameworkCore
+@inject _213FinalProjectContext context
+@inject NavigationManager NavigationManager
+
+<PageTitle>Manager Panel</PageTitle>
+<h1>Manager Panel</h1>
+
+<!--buttons for navigation-->
+<div class="manager-actions">
+
+    <NavLink class="btn btn-outline-primary" href="/manager-panel/delete-employee">
+        Delete Employee
+    </NavLink>
+    <NavLink class="btn btn-outline-primary" href="/manager-panel/delete-user">
+        Delete User
+    </NavLink>
+    <NavLink class="btn btn-outline-primary" href="/manager-panel/management-services">
+        Management Services
+    </NavLink>
+    <NavLink class="btn btn-outline-primary" href="/manager-panel/site-settings">
+        Site Settings
+    </NavLink>
+</div>
+
+<h2>Add New Employee</h2>
+
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @(IsError ? "alert-danger" : "alert-success")">
+        @Message
+    </div>
+}
+
+<form method="POST" @onsubmit="AddEmployee">
+    <div class="form-group">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" class="form-control" @bind="NewEmployee.FirstName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" class="form-control" @bind="NewEmployee.LastName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" class="form-control" @bind="NewEmployee.Email" required>
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" class="form-control" @bind="NewEmployee.PhoneNumber">
+    </div>
+
+    <div class="form-group">
+        <label for="bio">Bio:</label>
+        <textarea id="bio" class="form-control" @bind="NewEmployee.Bio" rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="hireDate">Hire Date:</label>
+        <input type="date" id="hireDate" class="form-control" @bind="HireDate" required>
+    </div>
+
+    <div class="form-group">
+        <label for="photoUrl">Photo URL:</label>
+        <input type="url" id="photoUrl" class="form-control" @bind="NewEmployee.PhotoURL" required>
+    </div>
+
+    <div class="form-group">
+        <label>Employee Type:</label>
+        <select class="form-control" @bind="EmployeeType">
+            <option value="ServicePerforming">Service Performing</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Manager">Manager</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Employee</button>
+    <button type="button" class="btn btn-secondary" @onclick="ClearForm">Clear</button>
+</form>
+
+
+
+@code {
+    private Employee NewEmployee { get; set; } = new ServicePerforming{ PhotoURL = string.Empty};
+    private DateTime HireDate { get; set; } = DateTime.Now;
+    private string EmployeeType { get; set; } = "ServicePerforming";
+    private string Message { get; set; } = string.Empty;
+    private bool IsError { get; set; } = false;
+
+    private async Task AddEmployee()
+    {
+        try
+        {
+            // Instances of all employees 
+            Employee employeeToAdd = EmployeeType switch
+            {
+                "Manager" => new Manager
+                {
+                    FirstName = NewEmployee.FirstName,
+                    LastName = NewEmployee.LastName,
+                    Email = NewEmployee.Email,
+                    PhoneNumber = NewEmployee.PhoneNumber,
+                    Bio = NewEmployee.Bio,
+                    HireDate = DateOnly.FromDateTime(HireDate),
+                    PhotoURL = NewEmployee.PhotoURL,
+                    IsActive = true,
+                    
+                },
+                "Receptionist" => new Receptionist
+                {
+                    FirstName = NewEmployee.FirstName,
+                    LastName = NewEmployee.LastName,
+                    Email = NewEmployee.Email,
+                    PhoneNumber = NewEmployee.PhoneNumber,
+                    Bio = NewEmployee.Bio,
+                    HireDate = DateOnly.FromDateTime(HireDate),
+                    PhotoURL = NewEmployee.PhotoURL,
+                    IsActive = true
+                },
+                _ => new ServicePerforming
+                {
+                    FirstName = NewEmployee.FirstName,
+                    LastName = NewEmployee.LastName,
+                    Email = NewEmployee.Email,
+                    PhoneNumber = NewEmployee.PhoneNumber,
+                    Bio = NewEmployee.Bio,
+                    HireDate = DateOnly.FromDateTime(HireDate),
+                    PhotoURL = NewEmployee.PhotoURL,
+                    IsActive = true
+                }
+            };
+
+            // add to db
+            context.Employee.Add(employeeToAdd);
+            await context.SaveChangesAsync();
+
+            // valid message
+            Message = $"Employee {employeeToAdd.FullName} added successfully!";
+            IsError = false;
+
+            // Clear
+            ClearForm();
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error adding employee: {ex.Message}";
+            IsError = true;
+        }
+    }
+
+    private void ClearForm()
+    {
+        NewEmployee = new ServicePerforming{ PhotoURL = string.Empty};
+        HireDate = DateTime.Now;
+        EmployeeType = "ServicePerforming";
+    }
+}
