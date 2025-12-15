@@ -276,5 +276,7 @@
 
         // Save appointment (simulate)
         successMessage = $"Appointment scheduled: Customer {model.CustomerID}, Service {model.ServiceID}, Employee {model.EmployeeID}, Price {model.Price:C}";
+    
+        context.Appointment.Add(model);
     }
 }

@@ -74,8 +74,11 @@ else
 
         if (!string.IsNullOrWhiteSpace(slug))
         {
+
             service = context.Service
+                .AsEnumerable()
                 .FirstOrDefault(s => SlugHelper.ToSlug(s.Name) == slug);
+
 
             if (service != null)
             {

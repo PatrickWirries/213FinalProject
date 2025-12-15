@@ -57,7 +57,13 @@ else
 
         if (!string.IsNullOrWhiteSpace(slug))
         {
-            employee = context.Employee.FirstOrDefault(e => SlugHelper.ToSlug(e.FullName) == slug);
+
+            employee = context.User
+                .OfType<Employee>()
+                .AsEnumerable()
+                .FirstOrDefault(e =>
+                SlugHelper.ToSlug($"{e.FirstName} {e.LastName}") == slug);
+
             if (employee != null)
             {
                 var serviceIds = context.ServicePerformingEmployeeService
