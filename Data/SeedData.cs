@@ -157,23 +157,23 @@ namespace _213FinalProject.Data
             {
                 context.ServicePerformingEmployeeService.AddRange(
             // Distribute services among multiple service-performing employees
-            // Bob (EmployeeID = 2) handles a mix of hair and introductory services
-            new ServicePerformingEmployeeService {EmployeeID = 2, ServiceID = 1 },
-            new ServicePerformingEmployeeService { EmployeeID = 2, ServiceID = 2 },
-            new ServicePerformingEmployeeService { EmployeeID = 2, ServiceID = 3 },
-            new ServicePerformingEmployeeService {EmployeeID = 2, ServiceID = 4 },
-            new ServicePerformingEmployeeService {EmployeeID = 2, ServiceID = 9 },
+            // Bob (EmployeeID = 3) handles a mix of hair and introductory services
+            new ServicePerformingEmployeeService {EmployeeID = 3, ServiceID = 1 },
+            new ServicePerformingEmployeeService {EmployeeID = 3, ServiceID = 2 },
+            new ServicePerformingEmployeeService {EmployeeID = 3, ServiceID = 3 },
+            new ServicePerformingEmployeeService {EmployeeID = 3, ServiceID = 4 },
+            new ServicePerformingEmployeeService {EmployeeID = 3, ServiceID = 9 },
 
             // Dave (EmployeeID = 4) focuses on massages
             new ServicePerformingEmployeeService {EmployeeID = 4, ServiceID = 5 },
-            new ServicePerformingEmployeeService { EmployeeID = 4, ServiceID = 6 },
+            new ServicePerformingEmployeeService {EmployeeID = 4, ServiceID = 6 },
             new ServicePerformingEmployeeService {EmployeeID = 4, ServiceID = 7 },
             new ServicePerformingEmployeeService {EmployeeID = 4, ServiceID = 8 },
             new ServicePerformingEmployeeService {EmployeeID = 4, ServiceID = 20 },
 
             // Emma (EmployeeID = 5) focuses on facials
             new ServicePerformingEmployeeService {EmployeeID = 5, ServiceID = 10 },
-            new ServicePerformingEmployeeService { EmployeeID = 5, ServiceID = 11 },
+            new ServicePerformingEmployeeService {EmployeeID = 5, ServiceID = 11 },
             new ServicePerformingEmployeeService {EmployeeID = 5, ServiceID = 12 },
             new ServicePerformingEmployeeService {EmployeeID = 5, ServiceID = 9 },
             new ServicePerformingEmployeeService {EmployeeID = 5, ServiceID = 19 },
