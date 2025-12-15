@@ -1,0 +1,101 @@
+﻿/* Layout wrapper */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2.5rem 1rem;
+}
+
+/* Card */
+.login-card {
+    width: 100%;
+    max-width: 480px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 24px rgba(33, 37, 41, 0.06);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Title */
+.login-title {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #212529;
+    text-align: left;
+}
+
+/* Labels and inputs */
+.login-form .form-label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.login-form .form-control {
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d6d8db;
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.login-form .form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.12);
+    border-color: #0d6efd;
+}
+
+/* Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.primary-action {
+    padding: 0.5rem 1.05rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+    box-shadow: 0 6px 16px rgba(13,110,253,0.06);
+}
+
+.primary-action:hover {
+    transform: translateY(-1px);
+}
+
+/* Error */
+.login-error {
+    margin-top: 1rem;
+    border-radius: 8px;
+}
+
+/* Helper links */
+.helper-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 1rem;
+        margin: 0 0.5rem;
+    }
+
+    .login-title {
+        font-size: 1.1rem;
+    }
+
+    .form-actions {
+        justify-content: stretch;
+    }
+
+    .primary-action {
+        width: 100%;
+    }
+}
