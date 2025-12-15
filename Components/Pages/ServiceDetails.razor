@@ -74,8 +74,12 @@ else
 
         if (!string.IsNullOrWhiteSpace(slug))
         {
+
             service = context.Service
+                .AsEnumerable()
+                //below line is nessessary and doesn't seem to work with EF core directly
                 .FirstOrDefault(s => SlugHelper.ToSlug(s.Name) == slug);
+
 
             if (service != null)
             {

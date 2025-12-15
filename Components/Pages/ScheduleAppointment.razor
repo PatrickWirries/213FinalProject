@@ -10,9 +10,7 @@
 
 <h1>Schedule Appointment</h1>
 
-
 @* --=-- Needs to be removed once logging in is implemented --=-- *@
-
 <div class="mb-3">
     <label class="form-label">Customer</label>
     <InputSelect class="form-select" @bind-Value="model.CustomerID">
@@ -25,14 +23,15 @@
 </div>
 @* --=-- Needs to be removed once logging in is implemented --=-- *@
 
-
 @* --=-- Service Selection --=-- *@
 <div class="mb-3">
     <label class="form-label">Service</label>
     <div>
         @foreach (var s in filteredServices)
         {
-            bool disabled = selectedEmployeeId.HasValue && !employeeServiceMap[selectedEmployeeId.Value].Contains(s.ServiceID);
+            bool disabled = selectedEmployeeId.HasValue &&
+            !employeeServiceMap[selectedEmployeeId.Value].Contains(s.ServiceID);
+
             <button class="btn @(selectedServiceId == s.ServiceID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
                     disabled="@disabled"
                     @onclick="() => ToggleService(s.ServiceID)">
@@ -41,9 +40,6 @@
         }
     </div>
 </div>
-@* --=-- Service Selection --=-- *@
-
-
 
 @* --=-- Employee Selection --=-- *@
 <div class="mb-3">
@@ -51,7 +47,9 @@
     <div>
         @foreach (var e in filteredEmployees)
         {
-            bool disabled = selectedServiceId.HasValue && !serviceEmployeeMap[selectedServiceId.Value].Contains(e.UserID);
+            bool disabled = selectedServiceId.HasValue &&
+            !serviceEmployeeMap[selectedServiceId.Value].Contains(e.UserID);
+
             <button class="btn @(selectedEmployeeId == e.UserID ? "btn-success" : "btn-outline-primary") me-2 mb-2"
                     disabled="@disabled"
                     @onclick="() => ToggleEmployee(e.UserID)">
@@ -60,101 +58,84 @@
         }
     </div>
 </div>
-@* --=-- Employee Selection --=-- *@
 
-
-
-@* --=-- Date Selection --=--*@
+@* --=-- Date Selection --=-- *@
 <div class="mb-3 date-selector">
     <label class="form-label">Date</label>
-    <InputDate @bind-Value="selectedDate" class="form-control" Min="@DateTime.Today" />
+    <InputDate @bind-Value="selectedDate"
+               class="form-control"
+               Min="@DateTime.Today" />
 </div>
-
-@* --=-- Date Selection --=--*@
-
-
 
 @* --=-- Time Selection --=-- *@
 <div class="mb-3">
     <label class="form-label">Timeslots</label>
 
     @if (selectedDate == null || selectedServiceId == null || selectedEmployeeId == null)
-        { <div class="text-muted"> Select date, service, and employee to view availability. </div> }
-
+    {
+        <div class="text-muted">Select date, service, and employee to view availability.</div>
+    }
     else
     {
         <div>
             @foreach (var time in GetAvailableTimeSlots())
             {
                 <button class="btn @(model.ScheduledTime == time ? "btn-success" : "btn-outline-primary") me-2 mb-2"
-                    @onclick="() => SelectTime(time)">
+                        @onclick="() => SelectTime(time)">
                     @time.ToString("hh:mm tt")
                 </button>
             }
         </div>
     }
 </div>
-@* --=-- Time Selection --=-- *@
-
-
-
 
 @* --=-- Price Display --=-- *@
 <div class="mb-3 price-display">
     <label class="form-label">Price</label>
     <InputText class="form-control" @bind-Value="displayPrice" readonly />
 </div>
-@* --=-- Price Display --=-- *@
 
-
-<button class="btn btn-primary btn-submit" @onclick="SubmitAppointment">Schedule</button>
-
-
+<button class="btn btn-primary btn-submit" @onclick="SubmitAppointment">
+    Schedule
+</button>
 
 @if (!string.IsNullOrEmpty(successMessage))
-{ <div class="alert alert-success mt-3">@successMessage</div> }
+{
+    <div class="alert alert-success mt-3">@successMessage</div>
+}
 
 @code {
-    private static readonly TimeOnly BusinessOpen = new TimeOnly(9, 0);
-    private static readonly TimeOnly BusinessClose = new TimeOnly(17, 0);
+    private static readonly TimeOnly BusinessOpen = new(9, 0);
+    private static readonly TimeOnly BusinessClose = new(17, 0);
     private const int SlotMinutes = 30;
 
-
-    private Appointment model = new Appointment();
+    private Appointment model = new();
     private string? successMessage;
     private string displayPrice = "N/A";
-    private List<Customer> customers = new List<Customer>();
-    private List<Service> services = new List<Service>();
-    private List<ServicePerforming> performingEmployees = new List<ServicePerforming>();
 
-  
-
-    
+    private List<Customer> customers = new();
+    private List<Service> services = new();
+    private List<ServicePerforming> performingEmployees = new();
 
     private List<Service> filteredServices => services;
     private List<ServicePerforming> filteredEmployees => performingEmployees;
 
-    // selected ids
-    private int? selectedServiceId = null;
-    private int? selectedEmployeeId = null;
-    private DateOnly? selectedDate = DateOnly.FromDateTime(DateTime.Now);
+    private int? selectedServiceId;
+    private int? selectedEmployeeId;
+    private DateOnly? selectedDate = DateOnly.FromDateTime(DateTime.Today);
 
-
-    // mapping for filtering
-    private Dictionary<int, List<int>> serviceEmployeeMap;
-    private Dictionary<int, List<int>> employeeServiceMap;
-
-
-
+    private Dictionary<int, List<int>> serviceEmployeeMap = new();
+    private Dictionary<int, List<int>> employeeServiceMap = new();
 
 
     protected override void OnInitialized()
 
     {
 
-        // Build mappings
+<!--         // Build mappings
         serviceEmployeeMap = new Dictionary<int, List<int>>();
-        employeeServiceMap = new Dictionary<int, List<int>>();
+        employeeServiceMap = new Dictionary<int, List<int>>(); -->
+
 
         customers = context.Customer.ToList();
         services = context.Service.ToList();
@@ -162,14 +143,12 @@
 
         foreach (var sp in context.ServicePerformingEmployeeService)
         {
-            if (!serviceEmployeeMap.ContainsKey(sp.ServiceID))
-            { serviceEmployeeMap[sp.ServiceID] = new List<int>(); }
-
+            serviceEmployeeMap
+                .TryAdd(sp.ServiceID, new List<int>());
             serviceEmployeeMap[sp.ServiceID].Add(sp.EmployeeID);
 
-
-            if (!employeeServiceMap.ContainsKey(sp.EmployeeID))
-            { employeeServiceMap[sp.EmployeeID] = new List<int>(); }
+            employeeServiceMap
+                .TryAdd(sp.EmployeeID, new List<int>());
             employeeServiceMap[sp.EmployeeID].Add(sp.ServiceID);
         }
     }
@@ -178,21 +157,28 @@
     {
         if (selectedServiceId == serviceId)
         {
+            // selectedServiceId = null;
+            // model.ServiceID = 0;
+            // displayPrice = "N/A";
+
             selectedServiceId = null;
             model.ServiceID = 0;
             model.Price = 0;
+            model.Duration = 0;
             displayPrice = "N/A";
         }
         else
         {
             selectedServiceId = serviceId;
             model.ServiceID = serviceId;
+
             var s = services.First(x => x.ServiceID == serviceId);
             model.Price = s.BasePrice;
+            model.Duration = s.DurationMinutes;
             displayPrice = s.BasePrice.ToString("C");
 
-            // if currently selected employee cannot perform this service, unselect
-            if (selectedEmployeeId.HasValue && !serviceEmployeeMap[serviceId].Contains(selectedEmployeeId.Value))
+            if (selectedEmployeeId.HasValue &&
+                !serviceEmployeeMap[serviceId].Contains(selectedEmployeeId.Value))
             {
                 selectedEmployeeId = null;
                 model.EmployeeID = 0;
@@ -212,13 +198,12 @@
             selectedEmployeeId = employeeId;
             model.EmployeeID = employeeId;
 
-            // if currently selected service is not supported by this employee, unselect
-            if (selectedServiceId.HasValue && !employeeServiceMap[employeeId].Contains(selectedServiceId.Value))
+            if (selectedServiceId.HasValue &&
+                !employeeServiceMap[employeeId].Contains(selectedServiceId.Value))
             {
                 selectedServiceId = null;
                 model.ServiceID = 0;
-                model.Price = 0;
-                displayPrice = "$0.00";
+                displayPrice = "N/A";
             }
         }
     }
@@ -233,8 +218,8 @@
 
         var reserved = context.Appointment
             .Where(a =>
-                a.EmployeeID == selectedEmployeeId &&
-                a.ScheduledDate == selectedDate)
+                a.EmployeeID == selectedEmployeeId.Value &&
+                a.ScheduledDate == selectedDate.Value)
             .ToList();
 
         var slots = new List<TimeOnly>();
@@ -242,14 +227,13 @@
 
         while (current.AddMinutes(duration) <= BusinessClose)
         {
+            var slotEnd = current.AddMinutes(duration);
+
             bool overlaps = reserved.Any(a =>
             {
-                var reservedStart = a.ScheduledTime;
-                var reservedEnd = a.ScheduledTime.AddMinutes(a.Duration);
-
-                var slotEnd = current.AddMinutes(duration);
-
-                return current < reservedEnd && slotEnd > reservedStart;
+                var existingStart = a.ScheduledTime;
+                var existingEnd = a.ScheduledTime.AddMinutes(a.Duration);
+                return current < existingEnd && slotEnd > existingStart;
             });
 
             if (!overlaps)
@@ -267,22 +251,21 @@
         model.ScheduledDate = selectedDate!.Value;
     }
 
-
     private void SubmitAppointment()
     {
-        if (model.CustomerID    == 0    ||
-            model.ServiceID     == 0    ||
-            model.EmployeeID    == 0    ||
-            selectedDate        == null ||
+        if (model.CustomerID == 0 ||
+            model.ServiceID == 0 ||
+            model.EmployeeID == 0 ||
             model.ScheduledTime == default)
         {
             successMessage = "Please complete all selections.";
             return;
         }
 
+        context.Appointment.Add(model);
+        context.SaveChanges();
 
-        // Save appointment (simulate)
-        successMessage = $"Appointment scheduled: Customer {model.CustomerID}, Service {model.ServiceID}, Employee {model.EmployeeID}, Price {model.Price:C}";
+        successMessage = "Appointment successfully scheduled.";
     }
     private bool _checkedAuth;
     protected override async Task OnAfterRenderAsync(bool firstRender)
