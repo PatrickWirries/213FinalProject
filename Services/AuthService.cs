@@ -78,4 +78,34 @@ public class AuthService
 
         return await _context.User.FindAsync(result.Value);
     }
+
+    public async Task<bool> IsUser(string email, string password, string firstName, string lastName)
+    {
+        var result = await _context.User.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+        //If result is not null, user with email already exists
+        if (result != null)
+        {
+            return false;
+        }
+        //Validate input lengths
+        if (password.Length < 5 || password.Length > 128
+            || firstName.Length == 0 || firstName.Length > 50
+            || lastName.Length == 0 || lastName.Length > 50
+            || email.Length == 0 || email.Length > 254)
+        {
+            return false;
+        }
+
+        User newUser = new Customer
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            PasswordHash = password
+        };
+        _context.User.Add(newUser);
+        _context.SaveChanges();
+        return true;
+    }
 }
