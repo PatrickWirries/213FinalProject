@@ -149,12 +149,6 @@
     protected override void OnInitialized()
 
     {
-
-<!--         // Build mappings
-        serviceEmployeeMap = new Dictionary<int, List<int>>();
-        employeeServiceMap = new Dictionary<int, List<int>>(); -->
-
-
         customers = context.Customer.ToList();
         services = context.Service.ToList();
         performingEmployees = context.Employee.OfType<ServicePerforming>().ToList();

@@ -1,4 +1,11 @@
-﻿
+﻿.btn:disabled {
+    background-color: dimgrey !important;
+    border-color: black !important;
+    color: black !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
 /*  primary btns  */
 .btn-primary {
     color: white !important;

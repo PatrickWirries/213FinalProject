@@ -1,4 +1,11 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@rendermode InteractiveServer
+@using Data
+@using _213FinalProject.Models
+@inject _213FinalProjectContext context
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">213FinalProject</a>
     </div>
@@ -8,6 +15,7 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
@@ -31,19 +39,56 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Employees
             </NavLink>
         </div>
-
-        
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manager-panel">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Manager Panel
-            </NavLink>
-        </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="UserAppointments">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> User Appointments
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Appointments
             </NavLink>
         </div>
+
+        
+        @if(true)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="manager-panel">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Manager Panel
+                </NavLink>
+            </div>
+        }
+
+
     </nav>
 </div>
 
+@code{
+    private bool _authChecked;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to auth state changes
+        AuthService.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        // JS is now available — safe to read session storage
+        await AuthService.InitializeAsync();
+
+        _authChecked = true;
+        StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/LoginUser", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnChange -= StateHasChanged;
+    }
+
+}

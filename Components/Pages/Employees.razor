@@ -35,7 +35,6 @@ else
                                     }
 
 
-                                    @* <p class="mb-1"><small class="text-muted">Hired: FormatTimeSince(@employee.HireDate.ToString("d")</small></p> *@
                                     <p class="mb-1"><small class="text-muted">Hired: @FormatTimeSince(@employee.HireDate)</small></p>
 
                                     @if (!string.IsNullOrWhiteSpace(employee.Bio))
