@@ -3,7 +3,8 @@
 @using _213FinalProject.Models
 @using Microsoft.EntityFrameworkCore
 @inject _213FinalProjectContext context
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
+@inject AuthService AuthService
 
 <PageTitle>Delete Employee</PageTitle>
 
@@ -185,6 +186,23 @@
 </style>
 
 @code {
+
+    private bool _checkedAuth;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checkedAuth)
+            return;
+
+        _checkedAuth = true;
+
+        if (!await AuthService.IsLoggedInAsync())
+        {
+            Navigation.NavigateTo("/LoginUser", forceLoad: true);
+        }
+        StateHasChanged();
+    }
+
+
     private List<Employee>? Employees { get; set; }
     private Employee? EmployeeToDelete { get; set; }
     private bool ShowConfirmation { get; set; } = false;

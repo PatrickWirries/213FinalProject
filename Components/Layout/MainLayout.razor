@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
+
 @inject NavigationManager Navigation
-@inject _213FinalProject.Data._213FinalProjectContext context
 @inject AuthService AuthService
+
+<PageTitle>213 Final Project</PageTitle>
 
 <div class="page">
     <div class="sidebar">
@@ -9,21 +12,75 @@
     </div>
 
     <main>
-            
-        <!--Dynamically show Login/Register or Logout? Hurts my brainnnnnn-->
-            @* <div class="top-row px-4">
-                <a href="/LoginUser">Login/Register</a>
-            </div> *@
-        
 
+        <!-- Header -->
+        <div class="top-row px-4 d-flex justify-content-end align-items-center gap-3">
+
+            @if (!_authChecked)
+            {
+                <span class="text-muted">Checking login…</span>
+            }
+            else if (AuthService.LoggedIn)
+            {
+                <button class="btn btn-outline-danger btn-sm"
+                        @onclick="Logout">
+                    Logout
+                </button>
+            }
+            else
+            {
+                <a class="btn btn-outline-primary btn-sm"
+                   href="/LoginUser">
+                    Login / Register
+                </a>
+            }
+
+        </div>
+
+        <!-- Page Content -->
         <article class="content px-4">
             @Body
         </article>
+
     </main>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <span class="dismiss">×</span>
 </div>
+
+@code {
+    private bool _authChecked;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to auth state changes
+        AuthService.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("MainLayout hydrated");
+        if (!firstRender)
+            return;
+
+        // JS is now available — safe to read session storage
+        await AuthService.InitializeAsync();
+
+        _authChecked = true;
+        StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/LoginUser", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnChange -= StateHasChanged;
+    }
+}

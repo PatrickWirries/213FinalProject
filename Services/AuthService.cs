@@ -16,8 +16,10 @@ public class AuthService
         _session = session;
     }
 
- 
-
+    private bool _loggedIn;
+    public bool LoggedIn => _loggedIn;
+    public event Action? OnChange;
+    private bool _initialized;
 
 
     /// <summary>
@@ -49,6 +51,11 @@ public class AuthService
 
         // Store user ID in session
         await _session.SetAsync(USER_KEY, user.UserID);
+
+        _loggedIn = true;
+        _initialized = true;
+        OnChange?.Invoke();
+
         Console.WriteLine("[Login] Login successful!");
         return true;
     }
@@ -58,8 +65,12 @@ public class AuthService
     /// </summary>
     public async Task LogoutAsync()
     {
+        //await _session.DeleteAsync(USER_KEY);
+        //Console.WriteLine("[Logout] User logged out.");
+
         await _session.DeleteAsync(USER_KEY);
-        Console.WriteLine("[Logout] User logged out.");
+        _loggedIn = false;
+        OnChange?.Invoke();
     }
 
     /// <summary>
@@ -67,8 +78,14 @@ public class AuthService
     /// </summary>
     public async Task<bool> IsLoggedInAsync()
     {
-        var result = await _session.GetAsync<int>(USER_KEY);
-        return result.Success && result.Value > 0;
+        //var result = await _session.GetAsync<int>(USER_KEY);
+        //return result.Success && result.Value > 0;
+
+        if (!_initialized)
+            return false;
+
+        return LoggedIn;
+
     }
 
     /// <summary>
@@ -132,4 +149,21 @@ public class AuthService
         
         return false;
     }
+
+    public void SetLoggedIn(bool value)
+    {
+        if (_loggedIn == value)
+            return;
+
+        _loggedIn = value;
+        OnChange?.Invoke();
+    }
+
+    public async Task InitializeAsync()
+    {
+        var result = await _session.GetAsync<int>(USER_KEY);
+        _loggedIn = result.Success && result.Value > 0;
+        _initialized = true;
+    }
+
 }

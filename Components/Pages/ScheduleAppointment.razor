@@ -2,8 +2,8 @@
 @rendermode InteractiveServer
 @using Data
 @using _213FinalProject.Models
-@inject NavigationManager Navigation
 @inject _213FinalProjectContext context
+@inject NavigationManager Navigation
 @inject AuthService AuthService
 
 <PageTitle>Schedule Appointment</PageTitle>
@@ -104,7 +104,25 @@
     <div class="alert alert-success mt-3">@successMessage</div>
 }
 
+
 @code {
+
+    private bool _checkedAuth;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checkedAuth)
+            return;
+
+        _checkedAuth = true;
+
+        if (!await AuthService.IsLoggedInAsync())
+        {
+            Navigation.NavigateTo("/LoginUser", forceLoad: true);
+        }
+        StateHasChanged();
+    }
+
+
     private static readonly TimeOnly BusinessOpen = new(9, 0);
     private static readonly TimeOnly BusinessClose = new(17, 0);
     private const int SlotMinutes = 30;
@@ -264,21 +282,7 @@
 
         context.Appointment.Add(model);
         context.SaveChanges();
-
+        // model.ScheduledTime = default;
         successMessage = "Appointment successfully scheduled.";
-    }
-    private bool _checkedAuth;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender || _checkedAuth)
-            return;
-
-        _checkedAuth = true;
-
-        if (!await AuthService.IsLoggedInAsync())
-        {
-            Navigation.NavigateTo("/LoginUser", forceLoad: true);
-        }
-        StateHasChanged();
     }
 }
