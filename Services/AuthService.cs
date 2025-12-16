@@ -58,9 +58,13 @@ public class AuthService
         {
             await _session.SetAsync(USER_ROLE, "Manager");
         }
-        else if(_context.User.OfType<Employee>().Any(u => u.UserID == user.UserID))
+        else if (_context.User.OfType<Receptionist>().Any(u => u.UserID == user.UserID))
         {
-            await _session.SetAsync(USER_ROLE, "Employee");
+            await _session.SetAsync(USER_ROLE, "Receptionist");
+        }
+        else if (_context.User.OfType<ServicePerforming>().Any(u => u.UserID == user.UserID))
+        {
+            await _session.SetAsync(USER_ROLE, "ServicePerforming");
         }
         else
         {
@@ -122,6 +126,42 @@ public class AuthService
         if (!result.Success)
             return null;
         return result.Value;
+    }
+
+    //Is Manager? True ; False
+    public async Task<bool> IsManager()
+    {
+        var result = await _session.GetAsync<string>(USER_ROLE);
+        if (!result.Success)
+            return false;
+        return result.Value == "Manager";
+    }
+
+    //Is Receptionist? True ; False
+    public async Task<bool> IsReceptionist()
+    {
+        var result = await _session.GetAsync<string>(USER_ROLE);
+        if (!result.Success)
+            return false;
+        return result.Value == "Receptionist";
+    }
+
+    //Is ServicePerforming? True ; False
+    public async Task<bool> IsServicePerforming()
+    {
+        var result = await _session.GetAsync<string>(USER_ROLE);
+        if (!result.Success)
+            return false;
+        return result.Value == "ServicePerforming";
+    }
+
+    //Is Customer? True ; False
+    public async Task<bool> IsCustomer()
+    {
+        var result = await _session.GetAsync<string>(USER_ROLE);
+        if (!result.Success)
+            return false;
+        return result.Value == "Customer";
     }
 
     /// <summary>

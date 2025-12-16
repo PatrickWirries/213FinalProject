@@ -169,12 +169,18 @@
             return;
 
         _checkedAuth = true;
-        var result = await AuthService.GetUserRoleAsync();
-        if (result != "Manager")
+        var result = await AuthService.IsManager();
+        if (!result)
         {
             NavigationManager.NavigateTo("/", forceLoad: true);
             return;
         }
+        // var result = await AuthService.GetUserRoleAsync();
+        // if (result != "Manager")
+        // {
+        //     NavigationManager.NavigateTo("/", forceLoad: true);
+        //     return;
+        // }
         Console.WriteLine($"[ManagerPannel] User Role: {result}");
         StateHasChanged();
     }
