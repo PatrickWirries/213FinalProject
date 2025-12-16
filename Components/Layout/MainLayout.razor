@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject _213FinalProject.Data._213FinalProjectContext context
+@inject AuthService AuthService
 
 <div class="page">
     <div class="sidebar">
@@ -6,10 +9,12 @@
     </div>
 
     <main>
-
-        @* <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div> *@
+            
+        <!--Dynamically show Login/Register or Logout? Hurts my brainnnnnn-->
+            @* <div class="top-row px-4">
+                <a href="/LoginUser">Login/Register</a>
+            </div> *@
+        
 
         <article class="content px-4">
             @Body

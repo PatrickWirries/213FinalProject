@@ -9,12 +9,16 @@ public class AuthService
     private readonly ProtectedSessionStorage _session;
 
     private const string USER_KEY = "loggedInUserId";
-
+ 
     public AuthService(_213FinalProjectContext context, ProtectedSessionStorage session)
     {
         _context = context;
         _session = session;
     }
+
+ 
+
+
 
     /// <summary>
     /// Attempts to log in a user by email and password (plain-text).
@@ -64,7 +68,7 @@ public class AuthService
     public async Task<bool> IsLoggedInAsync()
     {
         var result = await _session.GetAsync<int>(USER_KEY);
-        return result.Success;
+        return result.Success && result.Value > 0;
     }
 
     /// <summary>
