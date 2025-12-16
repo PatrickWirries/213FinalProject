@@ -11,7 +11,7 @@
 <h1>Schedule Appointment</h1>
 
 @* --=-- Needs to be removed once logging in is implemented --=-- *@
-<div class="mb-3">
+@* <div class="mb-3">
     <label class="form-label">Customer</label>
     <InputSelect class="form-select" @bind-Value="model.CustomerID">
         <option value="0">-- Select Customer --</option>
@@ -20,7 +20,7 @@
             <option value="@c.UserID">@c.FullName (@c.Email)</option>
         }
     </InputSelect>
-</div>
+</div> *@
 @* --=-- Needs to be removed once logging in is implemented --=-- *@
 
 @* --=-- Service Selection --=-- *@
@@ -169,10 +169,6 @@
     {
         if (selectedServiceId == serviceId)
         {
-            // selectedServiceId = null;
-            // model.ServiceID = 0;
-            // displayPrice = "N/A";
-
             selectedServiceId = null;
             model.ServiceID = 0;
             model.Price = 0;
@@ -265,8 +261,7 @@
 
     private void SubmitAppointment()
     {
-        if (model.CustomerID == 0 ||
-            model.ServiceID == 0 ||
+        if (model.ServiceID == 0 ||
             model.EmployeeID == 0 ||
             model.ScheduledTime == default)
         {
@@ -276,7 +271,7 @@
 
         context.Appointment.Add(model);
         context.SaveChanges();
-        // model.ScheduledTime = default;
+
         successMessage = "Appointment successfully scheduled.";
     }
 }
