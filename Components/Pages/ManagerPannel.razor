@@ -4,6 +4,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject _213FinalProjectContext context
 @inject NavigationManager NavigationManager
+@inject AuthService AuthService
 
 <PageTitle>Manager Panel</PageTitle>
 <h1>Manager Panel</h1>
@@ -110,7 +111,7 @@
                     HireDate = DateOnly.FromDateTime(HireDate),
                     PhotoURL = NewEmployee.PhotoURL,
                     IsActive = true,
-                    
+
                 },
                 "Receptionist" => new Receptionist
                 {
@@ -159,5 +160,22 @@
         NewEmployee = new ServicePerforming{ PhotoURL = string.Empty};
         HireDate = DateTime.Now;
         EmployeeType = "ServicePerforming";
+    }
+
+    private bool _checkedAuth;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checkedAuth)
+            return;
+
+        _checkedAuth = true;
+        var result = await AuthService.GetUserRoleAsync();
+        if (result != "Manager")
+        {
+            NavigationManager.NavigateTo("/", forceLoad: true);
+            return;
+        }
+        Console.WriteLine($"[ManagerPannel] User Role: {result}");
+        StateHasChanged();
     }
 }

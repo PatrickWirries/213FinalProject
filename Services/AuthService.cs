@@ -9,6 +9,7 @@ public class AuthService
     private readonly ProtectedSessionStorage _session;
 
     private const string USER_KEY = "loggedInUserId";
+    private const string USER_ROLE = "USER_ROLE";
  
     public AuthService(_213FinalProjectContext context, ProtectedSessionStorage session)
     {
@@ -52,13 +53,27 @@ public class AuthService
         // Store user ID in session
         await _session.SetAsync(USER_KEY, user.UserID);
 
+        // Determine and store user role
+        if (_context.User.OfType<Manager>().Any(u => u.UserID == user.UserID))
+        {
+            await _session.SetAsync(USER_ROLE, "Manager");
+        }
+        else if(_context.User.OfType<Employee>().Any(u => u.UserID == user.UserID))
+        {
+            await _session.SetAsync(USER_ROLE, "Employee");
+        }
+        else
+        {
+            await _session.SetAsync(USER_ROLE, "Customer");
+        }
         _loggedIn = true;
         _initialized = true;
         OnChange?.Invoke();
 
         Console.WriteLine("[Login] Login successful!");
         return true;
-    }
+    
+        }
 
     /// <summary>
     /// Logs out the current user.
@@ -98,6 +113,15 @@ public class AuthService
             return null;
 
         return await _context.User.FindAsync(result.Value);
+    }
+
+    //Gets the role of the currently logged-in user
+    public async Task<String> GetUserRoleAsync()
+    {
+        var result = await _session.GetAsync<string>(USER_ROLE);
+        if (!result.Success)
+            return null;
+        return result.Value;
     }
 
     /// <summary>
