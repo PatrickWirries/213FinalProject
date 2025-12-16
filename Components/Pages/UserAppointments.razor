@@ -1,0 +1,109 @@
+﻿@page "/UserAppointments"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using _213FinalProject.Models
+@inject _213FinalProject.Data._213FinalProjectContext context
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+
+<PageTitle>User Appointments</PageTitle>
+<h3>User Appointments</h3>
+
+@if (!userAppointmentDisplays.Any())
+{
+    <p>No appointments found.</p>
+}
+else
+{
+    //Display each appointment with related service and employee info
+    @foreach (var item in userAppointmentDisplays)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Appointment</h5>
+                <p class="card-text">Date: @item.Appointment.ScheduledDate</p>
+                <p class="card-text">Time: @item.Appointment.ScheduledTime</p>
+                <p class="card-text">Service Name: @item.ServiceName</p>
+                <p class="card-text">Employee Name: @item.EmployeeName</p>
+                <p class="card-text">Duration: @item.Appointment.Duration</p>
+            </div>
+            <button class="btn btn-danger mb-3" @onclick="async () =>
+            {
+                context.Appointment.Remove(item.Appointment);
+                await context.SaveChangesAsync();
+                userAppointmentDisplays.Remove(item);
+                StateHasChanged();}"> Cancel Appointment </button>
+        </div>
+    }
+}
+
+@code {
+    private List<Appointment> userAppointments = new();
+    private List<AppointmentDisplay> userAppointmentDisplays = new();
+
+    // Run auth + load logic after first render so ProtectedSessionStorage (JS interop) is available
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        try
+        {
+            //Ensure user is logged in
+            var currentUser = await AuthService.GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                Navigation.NavigateTo("/LoginUser", forceLoad: false);
+                return;
+            }
+
+            // Load appointments for current user
+            userAppointments = await context.Appointment
+                .Where(a => a.CustomerID == currentUser.UserID)
+                .ToListAsync();
+
+            if (userAppointments.Any())
+            {
+                var serviceIds = userAppointments.Select(a => a.ServiceID).Distinct().ToList();
+                var employeeIds = userAppointments.Select(a => a.EmployeeID).Distinct().ToList();
+
+                // Load related Services
+                var services = await context.Service
+                    .Where(s => serviceIds.Contains(s.ServiceID))
+                    .ToDictionaryAsync(s => s.ServiceID, s => s.Name);
+
+                // Load related Employees
+                var employees = await context.Employee
+                    .Where(e => employeeIds.Contains(e.UserID))
+                    .ToDictionaryAsync(e => e.UserID, e => $"{e.FirstName} {e.LastName}");
+
+                    // Combine data for display
+                userAppointmentDisplays = userAppointments
+                    .Select(a => new AppointmentDisplay
+                    {
+                        Appointment = a,
+                        ServiceName = services.TryGetValue(a.ServiceID, out var sname) ? sname : $"Service #{a.ServiceID}",
+                        EmployeeName = employees.TryGetValue(a.EmployeeID, out var ename) ? ename : $"Employee #{a.EmployeeID}"
+                    })
+                    .ToList();
+            }
+
+            // Request re-render with loaded data -> Update screen to show appointments
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (InvalidOperationException){}
+        
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[UserAppointments] Error loading appointments: {ex}");
+        }
+    }
+
+    //Encapsulate appointment display data
+    private class AppointmentDisplay
+    {
+        public required Appointment Appointment { get; init; }
+        public required string ServiceName { get; init; }
+        public required string EmployeeName { get; init; }
+    }
+}
