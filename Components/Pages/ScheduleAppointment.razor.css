@@ -8,11 +8,11 @@
         color: purple;
     }
 
-.btn-outline-primary:enabled {
+.btn-outline-primary {
     color: purple;
     border-color: purple;
 }
-    .btn-outline-primary:enabled:hover {
+    .btn-outline-primary:hover {
         background-color: purple;
         color: white;
     }
