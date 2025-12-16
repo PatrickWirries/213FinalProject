@@ -1,0 +1,457 @@
+﻿@page "/manager-panel/manage-services"
+@using _213FinalProject.Data
+@using _213FinalProject.Models
+@using Microsoft.EntityFrameworkCore
+@inject _213FinalProjectContext context
+@inject NavigationManager NavigationManager
+
+<PageTitle>Manage Services</PageTitle>
+
+<div class="container mt-4">
+
+    <!-- header -->
+    <div class="header-section mb-4">
+        <h1 class="mb-3">Manage Services</h1>
+        <button class="btn btn-outline-primary" @onclick='() => NavigationManager.NavigateTo("/manager-panel")'>
+            ← Back to Manager Panel
+        </button>
+    </div>
+
+    <!-- alerts -->
+    @if (!string.IsNullOrEmpty(Message))
+    {
+        <div class="alert @(IsError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            @Message
+            <button type="button" class="btn-close" @onclick="() => Message = string.Empty"></button>
+        </div>
+    }
+
+    <!-- add new serv btn -->
+    <div class="mb-4">
+        <button class="btn btn-primary btn-lg" @onclick="ShowAddServiceForm">
+            ➕ Add New Service
+        </button>
+    </div>
+
+    <!-- service table -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="mb-0">Current Services</h3>
+        </div>
+
+        <div class="card-body">
+            @if (Services == null)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3"><em>Loading services...</em></p>
+                </div>
+            }
+            else if (!Services.Any())
+            {
+                <div class="text-center py-5">
+                    <p class="text-muted"><em>No services found. Add your first service!</em></p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var service in Services.OrderBy(s => s.Category).ThenBy(s => s.Name))
+                            {
+                                <tr>
+                                    <td><strong>@service.ServiceID</strong></td>
+                                    <td>
+                                        <strong>@service.Name</strong>
+                                        @if (!string.IsNullOrEmpty(service.Description))
+                                        {
+                                            <br />
+                                            <small class="text-muted">@service.Description</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(service.Category))
+                                        {
+                                            <span class="badge bg-info">@service.Category</span>
+                                        }
+                                    </td>
+                                    <td>@service.DurationMinutes min</td>
+                                    <td>$@service.BasePrice.ToString("F2")</td>
+                                    <td>
+                                        @if (service.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-primary" @onclick="() => ShowEditServiceForm(service)">
+                                            Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" @onclick="() => ShowDeleteConfirmation(service)">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- add & edit serv modal -->
+@if (ShowServiceForm)
+{
+    <div class="modal-overlay" @onclick="CancelServiceForm">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3 class="modal-title">@(IsEditMode ? "Edit Service" : "Add New Service")</h3>
+            </div>
+
+            <div class="modal-body">
+                <form>
+                    <!-- name -->
+                    <div class="form-group">
+                        <label for="serviceName">Service Name <span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="serviceName"
+                               class="form-control"
+                               @bind="CurrentService.Name"
+                               placeholder="e.g., Haircut, Manicure"
+                               maxlength="100"
+                               required />
+                    </div>
+
+                    <!-- description -->
+                    <div class="form-group">
+                        <label for="serviceDescription">Description</label>
+                        <textarea id="serviceDescription"
+                                  class="form-control"
+                                  @bind="CurrentService.Description"
+                                  placeholder="Brief description of the service..."
+                                  maxlength="2000"
+                                  rows="3"></textarea>
+                    </div>
+
+                    <!-- catagory -->
+                    <div class="form-group">
+                        <label for="serviceCategory">Category</label>
+                        <input type="text"
+                               id="serviceCategory"
+                               class="form-control"
+                               @bind="CurrentService.Category"
+                               placeholder="e.g., Hair, Nails, Spa"
+                               maxlength="100" />
+                    </div>
+
+                    <!-- time -->
+                    <div class="form-group">
+                        <label for="serviceDuration">Duration (minutes) <span class="text-danger">*</span></label>
+                        <input type="number"
+                               id="serviceDuration"
+                               class="form-control"
+                               @bind="CurrentService.DurationMinutes"
+                               min="1"
+                               max="1440"
+                               required />
+                        <small class="text-muted">Enter duration in minutes (1-1440)</small>
+                    </div>
+
+                    <!-- base price -->
+                    <div class="form-group">
+                        <label for="servicePrice">Base Price ($) <span class="text-danger">*</span></label>
+                        <input type="number"
+                               id="servicePrice"
+                               class="form-control"
+                               @bind="CurrentService.BasePrice"
+                               step="0.01"
+                               min="0"
+                               max="1000000"
+                               required />
+                    </div>
+
+                    <!-- active -->
+                    <div class="form-check">
+                        <input type="checkbox"
+                               id="serviceActive"
+                               class="form-check-input"
+                               @bind="CurrentService.IsActive" />
+                        <label class="form-check-label" for="serviceActive">
+                            Service is active and bookable
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CancelServiceForm">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" @onclick="SaveService">
+                    @(IsEditMode ? "Save Changes" : "Add Service")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- delete confrimation -->
+@if (ShowDeleteModal && ServiceToDelete != null)
+{
+    <div class="modal-overlay" @onclick="CancelDelete">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Service Deletion</h3>
+            </div>
+
+            <div class="modal-body">
+                <p class="lead">
+                    Are you sure you want to delete this service?
+                </p>
+
+                <div class="user-details">
+                    <div class="detail-row">
+                        <strong>Service Name:</strong>
+                        <span>@ServiceToDelete.Name</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Category:</strong>
+                        <span>@ServiceToDelete.Category</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Price:</strong>
+                        <span>$@ServiceToDelete.BasePrice.ToString("F2")</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Duration:</strong>
+                        <span>@ServiceToDelete.DurationMinutes minutes</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger mb-0">
+                    <strong>Warning:</strong>
+                    This action cannot be undone. Any appointments using this service may be affected.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CancelDelete">
+                    Cancel
+                </button>
+                <button class="btn btn-danger" @onclick="ConfirmDelete">
+                    Yes, Delete Service
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Service>? Services { get; set; }
+    private Service CurrentService { get; set; } = new Service();
+    private Service? ServiceToDelete { get; set; }
+
+    private bool ShowServiceForm { get; set; } = false;
+    private bool ShowDeleteModal { get; set; } = false;
+    private bool IsEditMode { get; set; } = false;
+    private bool IsError { get; set; } = false;
+
+    private string Message { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadServices();
+    }
+
+    private async Task LoadServices()
+    {
+        Services = await context.Service
+            .OrderBy(s => s.Category)
+            .ThenBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    // add service
+    private void ShowAddServiceForm()
+    {
+        CurrentService = new Service
+        {
+            IsActive = true,
+            DurationMinutes = 30,
+            BasePrice = 0.00m
+        };
+        IsEditMode = false;
+        ShowServiceForm = true;
+    }
+
+    // edit service
+    private void ShowEditServiceForm(Service service)
+    {
+        // create a copy to avoid editing the list directly
+        CurrentService = new Service
+        {
+            ServiceID = service.ServiceID,
+            Name = service.Name,
+            Description = service.Description,
+            Category = service.Category,
+            DurationMinutes = service.DurationMinutes,
+            BasePrice = service.BasePrice,
+            IsActive = service.IsActive
+        };
+        IsEditMode = true;
+        ShowServiceForm = true;
+    }
+
+    // save service (add/edit)
+    private async Task SaveService()
+    {
+        try
+        {
+            // validation
+            if (string.IsNullOrWhiteSpace(CurrentService.Name))
+            {
+                Message = "Service name is required.";
+                IsError = true;
+                return;
+            }
+
+            if (CurrentService.DurationMinutes < 1 || CurrentService.DurationMinutes > 1440)
+            {
+                Message = "Duration must be between 1 and 1440 minutes.";
+                IsError = true;
+                return;
+            }
+
+            if (CurrentService.BasePrice < 0 || CurrentService.BasePrice > 1000000)
+            {
+                Message = "Price must be between $0.00 and $1,000,000.00.";
+                IsError = true;
+                return;
+            }
+
+            if (IsEditMode)
+            {
+                // update the existing service
+                var existingService = await context.Service
+                    .FirstOrDefaultAsync(s => s.ServiceID == CurrentService.ServiceID);
+
+                if (existingService != null)
+                {
+                    existingService.Name = CurrentService.Name;
+                    existingService.Description = CurrentService.Description;
+                    existingService.Category = CurrentService.Category;
+                    existingService.DurationMinutes = CurrentService.DurationMinutes;
+                    existingService.BasePrice = CurrentService.BasePrice;
+                    existingService.IsActive = CurrentService.IsActive;
+
+                    await context.SaveChangesAsync();
+                    Message = $"Service '{existingService.Name}' has been updated successfully!";
+                }
+            }
+            else
+            {
+                // add new service
+                context.Service.Add(CurrentService);
+                await context.SaveChangesAsync();
+                Message = $"Service '{CurrentService.Name}' has been added successfully!";
+            }
+
+            IsError = false;
+            ShowServiceForm = false;
+            await LoadServices();
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error saving service: {ex.Message}";
+            IsError = true;
+        }
+    }
+
+    private void CancelServiceForm()
+    {
+        ShowServiceForm = false;
+        CurrentService = new Service();
+    }
+
+    // delete service
+    private void ShowDeleteConfirmation(Service service)
+    {
+        ServiceToDelete = service;
+        ShowDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        ServiceToDelete = null;
+        ShowDeleteModal = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (ServiceToDelete == null) return;
+
+        try
+        {
+            // check if service is valid (used in correct way)
+            var hasAppointments = await context.Appointment
+                .AnyAsync(a => a.ServiceID == ServiceToDelete.ServiceID);
+
+            if (hasAppointments)
+            {
+                Message = $"Cannot delete '{ServiceToDelete.Name}' because it is being used in appointments. Consider marking it as inactive instead.";
+                IsError = true;
+                ShowDeleteModal = false;
+                return;
+            }
+
+            // check the employee assignments via service
+            var hasEmployeeAssignments = await context.Set<ServicePerformingEmployeeService>()
+                .AnyAsync(spes => spes.ServiceID == ServiceToDelete.ServiceID);
+
+            if (hasEmployeeAssignments)
+            {
+                Message = $"Cannot delete '{ServiceToDelete.Name}' because it is assigned to employees. Remove assignments first or mark it as inactive.";
+                IsError = true;
+                ShowDeleteModal = false;
+                return;
+            }
+
+            // delete service
+            context.Service.Remove(ServiceToDelete);
+            await context.SaveChangesAsync();
+
+            Message = $"Service '{ServiceToDelete.Name}' has been deleted successfully.";
+            IsError = false;
+
+            await LoadServices();
+            ServiceToDelete = null;
+            ShowDeleteModal = false;
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error deleting service: {ex.Message}";
+            IsError = true;
+            ShowDeleteModal = false;
+        }
+    }
+}
