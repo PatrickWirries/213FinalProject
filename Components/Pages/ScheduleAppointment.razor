@@ -96,6 +96,7 @@
 
     private bool _checkedAuth;
     private int custID;
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender || _checkedAuth)
@@ -107,7 +108,13 @@
         {
             Navigation.NavigateTo("/LoginUser", forceLoad: true);
         }
-        custID = (await AuthService.GetCurrentUserAsync()).UserID;
+        var nonNullUser = await AuthService.GetCurrentUserAsync();
+        if (nonNullUser == null)
+        {
+            Navigation.NavigateTo("/LoginUser", forceLoad: true);
+            return;
+        }
+        custID = nonNullUser.UserID;
 
         StateHasChanged();
 
