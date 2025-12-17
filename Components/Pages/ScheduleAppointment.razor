@@ -95,6 +95,7 @@
 @code {
 
     private bool _checkedAuth;
+    private int custID;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender || _checkedAuth)
@@ -106,9 +107,11 @@
         {
             Navigation.NavigateTo("/LoginUser", forceLoad: true);
         }
-        StateHasChanged();
-    }
+        custID = (await AuthService.GetCurrentUserAsync()).UserID;
 
+        StateHasChanged();
+
+    }
 
     private static readonly TimeOnly BusinessOpen = new(9, 0);
     private static readonly TimeOnly BusinessClose = new(17, 0);
@@ -256,6 +259,7 @@
             return;
         }
 
+        model.CustomerID = custID;
         context.Appointment.Add(model);
         context.SaveChanges();
 

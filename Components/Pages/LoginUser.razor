@@ -49,19 +49,16 @@
     private async Task HandleLogin()
     {
         ErrorMessage = string.Empty;
-        Console.WriteLine($"[Login Attempt] Email: '{email}', Password: '{password}'");
 
         var success = await AuthService.LoginAsync(email, password);
 
         if (success)
         {
-            Console.WriteLine("[LoginUser] Login successful!");
             Navigation.NavigateTo("/");
         }
         else
         {
             ErrorMessage = "Invalid email or password.";
-            Console.WriteLine("[LoginUser] Login failed.");
         }
     }
 

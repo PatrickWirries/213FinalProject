@@ -54,19 +54,16 @@
     private async Task RegisterAccount()
     {
         ErrorMessage = string.Empty;
-        Console.WriteLine($"[Register Attempt] Email: '{email}', Password:'{password}', First Name: '{firstName}', Last Name: '{lastName}'");
 
         var success = await AuthService.IsUser(email, password, firstName, lastName);
 
         if (success)
         {
-            Console.WriteLine("[RegisterUser] Register successful!");
             Navigation.NavigateTo("/", forceLoad: true);
         }
         else
         {
             ErrorMessage = "Registration Invalid. Please make sure the email is unique and the first/last name and password meet criteria.";
-            Console.WriteLine("[RegisterUser] Register failed.");
         }
     }
 }
