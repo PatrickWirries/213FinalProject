@@ -201,9 +201,9 @@ namespace _213FinalProject.Data
                     new Appointment
                     {
                         //AppointmentID = 1,
-                        EmployeeID = 2,
+                        EmployeeID = 3,
                         ServiceID = 1,
-                        CustomerID = 1,
+                        CustomerID = 7,
                         ScheduledDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(3)),
                         ScheduledTime = TimeOnly.Parse("09:30"),
                         Duration = 30,
@@ -212,9 +212,9 @@ namespace _213FinalProject.Data
                     new Appointment
                     {
                         //AppointmentID = 2,
-                        EmployeeID = 2,
+                        EmployeeID = 4,
                         ServiceID = 2,
-                        CustomerID = 2,
+                        CustomerID = 8,
                         ScheduledDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
                         ScheduledTime = TimeOnly.Parse("13:00"),
                         Duration = 90,

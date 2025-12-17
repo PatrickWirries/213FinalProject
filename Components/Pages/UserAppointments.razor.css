@@ -1,0 +1,38 @@
+﻿/* Simple stylesheet to match the Services page look while allowing small, appointment-specific tweaks */
+
+.appointments-grid .card {
+    /* keep consistent spacing and full-height cards like Services */
+    display: flex;
+    flex-direction: column;
+}
+
+.appointments-grid .card-body {
+    flex: 1 1 auto;
+    min-height: 150px;
+}
+
+.appointments-grid .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.appointments-grid .text-muted {
+    color: #6c757d;
+}
+
+.appointments-grid .fw-semibold {
+    font-weight: 600;
+}
+
+/* slightly smaller footer buttons to match compact card layout */
+.appointments-grid .card-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .appointments-grid .card-body {
+        min-height: 170px;
+    }
+}

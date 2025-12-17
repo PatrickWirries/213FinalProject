@@ -165,7 +165,7 @@
     private bool _checkedAuth;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || _checkedAuth)
+        if (firstRender || _checkedAuth)
             return;
 
         _checkedAuth = true;

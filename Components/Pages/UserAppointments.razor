@@ -6,8 +6,12 @@
 @inject NavigationManager Navigation
 @inject AuthService AuthService
 
+<link href="css/userappointments.css" rel="stylesheet" />
+
 <PageTitle>Appointments</PageTitle>
 <h3>Appointments</h3>
+<br />
+<h2>Your Upcoming Appointments</h2>
 
 @if (!userAppointmentDisplays.Any())
 {
@@ -15,31 +19,112 @@
 }
 else
 {
-    //Display each appointment with related service and employee info
-    @foreach (var item in userAppointmentDisplays)
-    {
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Appointment</h5>
-                <p class="card-text">Date: @item.Appointment.ScheduledDate</p>
-                <p class="card-text">Time: @item.Appointment.ScheduledTime</p>
-                <p class="card-text">Service Name: @item.ServiceName</p>
-                <p class="card-text">Employee Name: @item.EmployeeName</p>
-                <p class="card-text">Duration: @item.Appointment.Duration</p>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 appointments-grid">
+        @foreach (var item in userAppointmentDisplays)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">Appointment</h5>
+                        <p class="mb-1 text-muted">Employee: @item.EmployeeName</p>
+                        <p class="mb-1 fw-semibold">Service: @item.ServiceName</p>
+                        <p class="mb-1">Date: @item.Appointment.ScheduledDate</p>
+                        <p class="mb-1">Time: @item.Appointment.ScheduledTime</p>
+                        <p class="mb-0">Duration: @item.Appointment.Duration</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <button class="btn btn-danger btn-sm" @onclick="async () =>
+                                                                                      {
+                                                                                          context.Appointment.Remove(item.Appointment);
+                                                                                          await context.SaveChangesAsync();
+                                                                                          userAppointmentDisplays.Remove(item);
+                                                                                          await InvokeAsync(StateHasChanged);
+                                                                                      }">
+                    Cancel
+                </button>
             </div>
-            <button class="btn btn-danger mb-3" @onclick="async () =>
-            {
-                context.Appointment.Remove(item.Appointment);
-                await context.SaveChangesAsync();
-                userAppointmentDisplays.Remove(item);
-                StateHasChanged();}"> Cancel Appointment </button>
         </div>
-    }
+    </div>
+        }
+    </div>
+}
+
+@if (userRole == "Manager" || userRole == "Receptionist")
+{
+    <h2 class="mt-4">All Customer Appointments</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 appointments-grid">
+        @foreach (var item in allAppointmentsDisplay)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">Appointment</h5>
+                        <p class="mb-1 text-muted">Customer: @item.CustomerName</p>
+                        <p class="mb-1 text-muted">Employee: @item.EmployeeName</p>
+                        <p class="mb-1 fw-semibold">Service: @item.ServiceName</p>
+                        <p class="mb-1">Date: @item.Appointment.ScheduledDate</p>
+                        <p class="mb-1">Time: @item.Appointment.ScheduledTime</p>
+                        <p class="mb-0">Duration: @item.Appointment.Duration</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <button class="btn btn-danger btn-sm" @onclick="async () =>
+                                                                                      {
+                                                                                          context.Appointment.Remove(item.Appointment);
+                                                                                          await context.SaveChangesAsync();
+                                                                                          allAppointmentsDisplay.Remove(item);
+                                                                                          await InvokeAsync(StateHasChanged);
+                                                                                      }">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+        }
+    </div>
+}
+
+@if (userRole == "ServicePerforming")
+{
+    <h2 class="mt-4">Assigned Appointments</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 appointments-grid">
+        @foreach (var item in ServicePerformingDisplay)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">Appointment</h5>
+                        <p class="mb-1 text-muted">Customer: @item.CustomerName</p>
+                        <p class="mb-1 fw-semibold">Service: @item.ServiceName</p>
+                        <p class="mb-1">Date: @item.Appointment.ScheduledDate</p>
+                        <p class="mb-1">Time: @item.Appointment.ScheduledTime</p>
+                        <p class="mb-0">Duration: @item.Appointment.Duration</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <button class="btn btn-danger btn-sm" @onclick="async () =>
+                                                                                      {
+                                                                                          context.Appointment.Remove(item.Appointment);
+                                                                                          await context.SaveChangesAsync();
+                                                                                          ServicePerformingDisplay.Remove(item);
+                                                                                          await InvokeAsync(StateHasChanged);
+                                                                                      }">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+        }
+    </div>
 }
 
 @code {
     private List<Appointment> userAppointments = new();
+    private List<Appointment> allAppointments = new();
+    private List<Appointment> servicePerformingAppointments = new();
     private List<AppointmentDisplay> userAppointmentDisplays = new();
+    private List<AppointmentDisplay> allAppointmentsDisplay = new();
+    private List<AppointmentDisplay> ServicePerformingDisplay = new();
+    private string userRole = "";
+    private bool _isService;
 
     // Run auth + load logic after first render so ProtectedSessionStorage (JS interop) is available
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -47,20 +132,28 @@ else
         if (!firstRender)
             return;
 
+        _isService = await AuthService.IsServicePerforming();
+        //Ensure user is logged in
+        var currentUser = await AuthService.GetCurrentUserAsync();
+        if (currentUser == null)
+        {
+            Navigation.NavigateTo("/LoginUser", forceLoad: false);
+            return;
+        }
         try
         {
-            //Ensure user is logged in
-            var currentUser = await AuthService.GetCurrentUserAsync();
-            if (currentUser == null)
-            {
-                Navigation.NavigateTo("/LoginUser", forceLoad: false);
-                return;
-            }
+            //Get User Role
+            userRole = await AuthService.GetUserRoleAsync(); //Manager, Receptionist, ServicePerforming, Customer
+            Console.WriteLine("User Role: " + userRole);
 
             // Load appointments for current user
             userAppointments = await context.Appointment
                 .Where(a => a.CustomerID == currentUser.UserID)
                 .ToListAsync();
+
+            Console.WriteLine($"UserAppointments count: {userAppointments.Count}");
+            foreach (var a in userAppointments)
+                Console.WriteLine($"UserAppointment: id={a.AppointmentID}, cust={a.CustomerID}, emp={a.EmployeeID}");
 
             if (userAppointments.Any())
             {
@@ -77,7 +170,7 @@ else
                     .Where(e => employeeIds.Contains(e.UserID))
                     .ToDictionaryAsync(e => e.UserID, e => $"{e.FirstName} {e.LastName}");
 
-                    // Combine data for display
+                // Combine data for display
                 userAppointmentDisplays = userAppointments
                     .Select(a => new AppointmentDisplay
                     {
@@ -91,11 +184,98 @@ else
             // Request re-render with loaded data -> Update screen to show appointments
             await InvokeAsync(StateHasChanged);
         }
-        catch (InvalidOperationException){}
-        
+        catch (InvalidOperationException) { }
+
         catch (Exception ex)
         {
             Console.WriteLine($"[UserAppointments] Error loading appointments: {ex}");
+        }
+
+
+        // If user is Manager or Receptionist, load all customer appointments
+        if (userRole == "Manager" || userRole == "Receptionist")
+        {
+            allAppointments = await context.Appointment.ToListAsync();
+            Console.WriteLine($"AllAppointments count: {allAppointments.Count}");
+            if (allAppointments.Any())
+            {
+                var serviceIds = allAppointments.Select(a => a.ServiceID).Distinct().ToList();
+                var employeeIds = allAppointments.Select(a => a.EmployeeID).Distinct().ToList();
+                var customerIds = allAppointments.Select(a => a.CustomerID).Distinct().ToList();
+
+                var services = await context.Service
+                   .Where(s => serviceIds.Contains(s.ServiceID))
+                   .ToDictionaryAsync(s => s.ServiceID, s => s.Name);
+
+                var employees = await context.Employee
+                    .Where(e => employeeIds.Contains(e.UserID))
+                    .ToDictionaryAsync(e => e.UserID, e => $"{e.FirstName} {e.LastName}");
+
+                // Use the precomputed customerIds to avoid EF/client confusion
+                var users = await context.User
+                    .Where(u => customerIds.Contains(u.UserID))
+                    .ToDictionaryAsync(u => u.UserID, u => $"{u.FirstName} {u.LastName}");
+
+
+                allAppointmentsDisplay = allAppointments
+                    .Select(a => new AppointmentDisplay
+                    {
+                        Appointment = a,
+                        ServiceName = services.TryGetValue(a.ServiceID, out var sname) ? sname : $"Service #{a.ServiceID}",
+                        EmployeeName = employees.TryGetValue(a.EmployeeID, out var ename) ? ename : $"Employee #{a.EmployeeID}",
+                        CustomerName = users.TryGetValue(a.CustomerID, out var cname) ? cname : $"Customer #{a.CustomerID}"
+                    })
+                    .ToList();
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        // If user is ServicePerforming, load all customer appointments assigned to them
+        if (userRole == "ServicePerforming" || _isService)
+        {
+            // Load appointments where this employee is assigned
+            servicePerformingAppointments = await context.Appointment
+                .Where(a => a.EmployeeID == currentUser.UserID)
+                .ToListAsync();
+
+            Console.WriteLine($"ServicePerformingAppointments count: {servicePerformingAppointments.Count}");
+            foreach (var a in servicePerformingAppointments)
+                Console.WriteLine($"SP Appointment: id={a.AppointmentID}, cust={a.CustomerID}, emp={a.EmployeeID}");
+
+            if (servicePerformingAppointments.Any())
+            {
+                // Build lookup sets from the appointments we've just loaded
+                var serviceIds = servicePerformingAppointments.Select(a => a.ServiceID).Distinct().ToList();
+                var employeeIds = servicePerformingAppointments.Select(a => a.EmployeeID).Distinct().ToList();
+                var customerIds = servicePerformingAppointments.Select(a => a.CustomerID).Distinct().ToList();
+
+                // Load related services and employee names for display
+                var services = await context.Service
+                    .Where(s => serviceIds.Contains(s.ServiceID))
+                    .ToDictionaryAsync(s => s.ServiceID, s => s.Name);
+
+                var customers = await context.Customer
+                    .Where(c => customerIds.Contains(c.UserID))
+                    .ToDictionaryAsync(c => c.UserID, c => $"{c.FirstName} {c.LastName}");
+
+                var employees = await context.Employee
+                    .Where(e => employeeIds.Contains(e.UserID))
+                    .ToDictionaryAsync(e => e.UserID, e => $"{e.FirstName} {e.LastName}");
+
+                // Populate the display list for assigned appointments
+                ServicePerformingDisplay = servicePerformingAppointments
+                    .Select(a => new AppointmentDisplay
+                    {
+                        Appointment = a,
+                        ServiceName = services.TryGetValue(a.ServiceID, out var sname) ? sname : $"Service #{a.ServiceID}",
+                        EmployeeName = employees.TryGetValue(a.EmployeeID, out var ename) ? ename : $"Employee #{a.EmployeeID}",
+                        CustomerName = customers.TryGetValue(a.CustomerID, out var cname) ? cname : $"Customer #{a.CustomerID}"
+                    })
+                    .ToList();
+
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 
@@ -105,5 +285,6 @@ else
         public required Appointment Appointment { get; init; }
         public required string ServiceName { get; init; }
         public required string EmployeeName { get; init; }
+        public string CustomerName { get; init; }
     }
 }
