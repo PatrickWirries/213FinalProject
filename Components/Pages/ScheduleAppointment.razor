@@ -263,6 +263,9 @@
         context.Appointment.Add(model);
         context.SaveChanges();
 
+        Navigation.NavigateTo("/UserAppointments");
+
         successMessage = "Appointment successfully scheduled.";
+
     }
 }
