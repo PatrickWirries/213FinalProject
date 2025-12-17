@@ -79,8 +79,7 @@
         _authChecked = true;
         _IsManager = await AuthService.IsManager();
         Console.WriteLine("_IsManager: " + _IsManager);
-        // Thread.Sleep(1000);
-        // await InvokeAsync(StateHasChanged);
+
         StateHasChanged();
     }
 
@@ -88,6 +87,7 @@
     {
         await AuthService.LogoutAsync();
         Navigation.NavigateTo("/LoginUser", forceLoad: true);
+        StateHasChanged();
     }
 
     public void Dispose()
