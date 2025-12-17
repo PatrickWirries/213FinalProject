@@ -175,12 +175,6 @@
             NavigationManager.NavigateTo("/", forceLoad: true);
             return;
         }
-        // var result = await AuthService.GetUserRoleAsync();
-        // if (result != "Manager")
-        // {
-        //     NavigationManager.NavigateTo("/", forceLoad: true);
-        //     return;
-        // }
         Console.WriteLine($"[ManagerPannel] User Role: {result}");
         StateHasChanged();
     }

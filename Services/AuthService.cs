@@ -84,8 +84,6 @@ public class AuthService
     /// </summary>
     public async Task LogoutAsync()
     {
-        //await _session.DeleteAsync(USER_KEY);
-        //Console.WriteLine("[Logout] User logged out.");
 
         await _session.DeleteAsync(USER_KEY);
         _loggedIn = false;
@@ -97,9 +95,6 @@ public class AuthService
     /// </summary>
     public async Task<bool> IsLoggedInAsync()
     {
-        //var result = await _session.GetAsync<int>(USER_KEY);
-        //return result.Success && result.Value > 0;
-
         if (!_initialized)
             return false;
 
