@@ -59,7 +59,7 @@
 
 @code{
     private bool _authChecked;
-    private bool _IsManager;
+    private bool _isManager;
 
     protected override void OnInitialized()
     {
@@ -77,8 +77,8 @@
 
         _isManager = await AuthService.IsManager();
         _authChecked = true;
-        _IsManager = await AuthService.IsManager();
-        Console.WriteLine("_IsManager: " + _IsManager);
+        _isManager = await AuthService.IsManager();
+        Console.WriteLine("_IsManager: " + _isManager);
 
         StateHasChanged();
     }
