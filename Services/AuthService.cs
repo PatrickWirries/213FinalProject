@@ -32,21 +32,17 @@ public class AuthService
         email = email.Trim();
         password = password.Trim();
 
-        Console.WriteLine($"[Login] Attempting login for email: '{email}' with password: '{password}'");
-
         // Fetch user by email only
         var user = await _context.User.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
 
         if (user == null)
         {
-            Console.WriteLine("[Login] No user found with this email.");
             return false;
         }
 
         // Compare password manually
         if (user.PasswordHash != password)
         {
-            Console.WriteLine("[Login] Password mismatch.");
             return false;
         }
 
@@ -74,7 +70,6 @@ public class AuthService
         _initialized = true;
         OnChange?.Invoke();
 
-        Console.WriteLine("[Login] Login successful!");
         return true;
     
         }
