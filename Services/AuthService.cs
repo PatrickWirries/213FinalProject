@@ -120,7 +120,7 @@ public class AuthService
     }
 
     //Gets the role of the currently logged-in user
-    public async Task<String> GetUserRoleAsync()
+    public async Task<String?> GetUserRoleAsync()
     {
         var result = await _session.GetAsync<string>(USER_ROLE);
         if (!result.Success)
